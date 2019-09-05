@@ -25,6 +25,8 @@ tags:
     description: Product
   - name: order
     description: Order fulfillment
+  - name: search
+    description: Search
   - name: system-info
     description: System information
 
@@ -346,6 +348,42 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Order'
+  /search/products:
+    get:
+      tags:
+        - product
+        - search
+      summary: Search products
+      operationId: searchProducts
+      parameters: 
+        - name: q
+          in: query
+          description: Search query
+          schema:
+            type: string
+            example: "choco"
+      responses:
+        '200':
+          description: Search result
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+              example:
+                - id: "dee85bcb"
+                  storeId: "359c60e8"
+                  categoryId: "aa667d03"
+                  name: "Trilian Flag Milk"
+                  price: "2500"
+                  quatity: 50
+                - id: "07c5a852"
+                  storeId: "07c5a852"
+                  categoryId: "d7771045"
+                  name: "BitBat Chocolate"
+                  price: "d7771045"
+                  quatity: 89
   /healthz:
     get:
       tags:
