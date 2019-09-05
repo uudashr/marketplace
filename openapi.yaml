@@ -105,12 +105,12 @@ paths:
       summary: Retrieve all products
       operationId: retrieveAllProducts
       parameters: 
-        - name: q
+        - name: categoryId
           in: query
-          description: Search query
+          description: Category ID
           schema:
             type: string
-            example: "choco"
+            example: "d7771045"
       responses:
         '200':
           description: Product list
@@ -275,12 +275,12 @@ paths:
           schema:
             type: string
             example: "dee85bcb"
-        - name: q
+        - name: categoryId
           in: query
-          description: Search query
+          description: Category ID
           schema:
             type: string
-            example: "choco"
+            example: "d7771045"
       responses:
         '200':
           description: Store's product list
