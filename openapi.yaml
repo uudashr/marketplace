@@ -1,0 +1,531 @@
+openapi: 3.0.2
+info:
+  title: Marketplace API
+  description: Marketplace API Spec
+  version: 1.0.0
+servers:
+  - url: https://{environment}.marketplace.io
+    description: Deployment server
+    variables:
+      environment:
+        default: api
+        enum:
+          - api           # Production server
+          - api.staging   # Staging server
+          - api.dev       # Development server
+  - url: http://localhost:8080
+    description: Local development server
+
+tags: 
+  - name: category
+    description: Product category
+  - name: store
+    description: Store
+  - name: product
+    description: Product
+  - name: order
+    description: Order fulfillment
+  - name: system-info
+    description: System information
+
+paths:
+  /categories:
+    post:
+      tags:
+        - category
+      summary: Register new category
+      operationId: registerNewCategory
+      requestBody:
+        description: New category payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCategory'
+      responses:
+        '201':
+          description: New category registered
+          headers:
+            Location:
+              description: Created resource
+              schema:
+                type: string
+                example: "/categories/dee85bcb"
+        '409':
+          description: Duplicate category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectReference'
+        '422':
+          description: Invalid payload
+    get:
+      tags:
+        - category
+      summary: Retrieve all categories
+      operationId: retrieveAllCategories
+      responses:
+        '200':
+          description: Category list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+              example:
+                - id: 'dee85bcb'
+                  name: 'Coffee & Tea'
+                - id: 'dec734c0'
+                  name: 'Snack'
+  /categories/{categoryId}:
+    get:
+      tags:
+        - category
+      summary: Retrieve category details
+      operationId: retrieveCategoryDetails
+      parameters: 
+        - in: path
+          name: categoryId
+          description: Category ID
+          required: true
+          schema:
+            type: string
+            example: "dee85bcb"
+      responses:
+        '200':
+          description: Category details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+  /products:
+    post:
+      tags:
+        - product
+      summary: Register new product
+      operationId: registerNewProduct
+      requestBody:
+        description: New product payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewProduct'
+      responses:
+        '201':
+          description: New product registered
+          headers:
+            Location:
+              description: Created resource
+              schema:
+                type: string
+                example: "/products/dee85bcb"
+        '409':
+          description: Duplicate category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectReference'
+        '422':
+          description: Invalid payload
+    get:
+      tags:
+        - product
+      summary: Retrieve all products
+      operationId: retrieveAllProducts
+      responses:
+        '200':
+          description: Product list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+              example:
+                - id: 'dee85bcb'
+                  name: 'Nescafe'
+                  identificationNumber: "0811571013578"
+                - id: 'dec734c0'
+                  name: "Hershey's Milk Chocolate Bar"
+                  identificationNumber: "0811571013579"
+  /products/{productId}:
+    get:
+      tags:
+        - product
+      summary: Retrieve product details
+      operationId: retrieveProductDetails
+      parameters: 
+        - in: path
+          name: productId
+          description: Product ID
+          required: true
+          schema:
+            type: string
+            example: "dee85bcb"
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+  /stores:
+    post:
+      tags:
+        - store
+      summary: Register new store
+      operationId: registerNewStore
+      requestBody:
+        description: New store payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewStore'
+      responses:
+        '201':
+          description: New store registered
+          headers:
+            Location:
+              description: Created resource
+              schema:
+                type: string
+                example: "/stores/dee85bcb"
+        '409':
+          description: Duplicate category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectReference'
+        '422':
+          description: Invalid payload
+    get:
+      tags:
+        - store
+      summary: Retrieve all stores
+      operationId: retrieveAllStores
+      responses:
+        '200':
+          description: Store list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Store'
+              example:
+                - id: 'dee85bcb'
+                  name: 'My Mart'
+                - id: 'dec734c0'
+                  name: "Best Mart"
+  /stores/{storeId}:
+    get:
+      tags:
+        - store
+      summary: Retrieve Store details
+      operationId: retrieveStoreDetails
+      parameters: 
+        - in: path
+          name: storeId
+          description: Store ID
+          required: true
+          schema:
+            type: string
+            example: "dee85bcb"
+      responses:
+        '200':
+          description: Store details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Store'
+  /stores/{storeId}/products:
+    post:
+      tags:
+        - store
+        - product
+      summary: Offer new product
+      operationId: offerNewProduct
+      parameters: 
+        - in: path
+          name: storeId
+          description: Store ID
+          required: true
+          schema:
+            type: string
+            example: "dee85bcb"
+      requestBody:
+        description: Offer new product payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferNewProduct'
+      responses:
+        '201':
+          description: New product offered
+          headers:
+            Location:
+              description: Created resource
+              schema:
+                type: string
+                example: "/products/dee85bcb"
+        '409':
+          description: Duplicate category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectReference'
+        '422':
+          description: Invalid payload
+    get:
+      tags:
+        - store
+        - product
+      summary: Retrieve all store's product
+      operationId: retrieveAllStoreProducts
+      parameters: 
+        - in: path
+          name: storeId
+          description: Store ID
+          required: true
+          schema:
+            type: string
+            example: "dee85bcb"
+      responses:
+        '200':
+          description: Store's product list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+              example:
+                - id: 'dee85bcb'
+                  storeId: '359c60e8'
+                  categoryId: 'aa667d03'
+                  name: "Trilian Flag Milk"
+                  price: '2500'
+                  quatity: 50
+                - id: '07c5a852'
+                  storeId: '359c60e8'
+                  categoryId: 'd7771045'
+                  name: "BitBat Chocolate"
+                  price: '250000'
+                  quatity: 89
+  /orders:
+    post:
+      tags:
+        - order
+      summary: Place order
+      operationId: placeOrder
+      requestBody:
+        description: Place order payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaceOrder'
+      responses:
+        '201':
+          description: Order placed
+          headers:
+            Location:
+              description: Created resource
+              schema:
+                type: string
+                example: "/orders/dee85bcb"
+        '409':
+          description: Duplicate category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectReference'
+        '422':
+          description: Invalid payload
+    get:
+      tags:
+        - order
+      summary: Retrieve orders
+      operationId: retrieveOrders
+      responses:
+        '200':
+          description: Order list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+  /healthz:
+    get:
+      tags:
+        - system-info
+      summary: Check service health
+      operationId: checkServiceHealth
+      responses:
+        '200':
+          description: Service healthy
+components:
+  schemas:
+    NewCategory:
+      type: object
+      description: New category payload
+      properties:
+        name:
+          type: string
+          example: "Snack"
+      required:
+        - name
+    Category:
+      type: object
+      description: Category details
+      properties:
+        id:
+          type: string
+          example: "dee85bcb"
+        name:
+          type: string
+          example: "Snack"
+      required:
+        - id
+        - name
+    NewProduct:
+      type: object
+      description: New product payload
+      properties:
+        name:
+          type: string
+          example: "Snack"
+        identificiationNumber:
+          type: string
+          example: "0811571013579"
+      required:
+        - name
+    NewStore:
+      type: object
+      description: New store payload
+      properties:
+        name:
+          type: string
+          example: "MyMart"
+      required:
+        - name
+    Store:
+      type: object
+      description: Store details
+      properties:
+        id:
+          type: string
+          example: "dee85bcb"
+        name:
+          type: string
+          example: "My Mart"
+      required:
+        - id
+        - name
+    OfferNewProduct:
+      type: object
+      description: Offer new product payload
+      properties:
+        categoryId:
+          type: string
+          example: "eacfda17"
+        name:
+          type: string
+          example: "Fresh Milk"
+        price:
+          type: string
+          example: "2500"
+        quantity:
+          type: integer
+          example: 20
+      required: 
+        - categoryId
+        - name
+        - price
+        - quantity
+    Product:
+      type: object
+      description: Product details
+      properties:
+        id:
+          type: string
+          example: "dee85bcb"
+        storeId:
+          type: string
+          example: "da7ec5d5"
+        categoryId:
+          type: string
+          example: "eacfda17"
+        name:
+          type: string
+          example: "Fresh Milk"
+        price:
+          type: string
+          example: "2500"
+        quantity:
+          type: integer
+          example: 20
+      required: 
+        - id
+        - storeId
+        - categoryId
+        - price
+        - quantity
+    PlaceOrder:
+      type: object
+      description: Place order
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+          example:
+            - storeProductId: 'dee85bcb'
+              price: "120000"
+              quantity: 5
+            - storeProductUd: 'dec734c0'
+              price: '50000'
+              quantity: 10
+    Order:
+      type: object
+      description: Place order
+      properties:
+        id:
+          type: string
+          example: "dee85bcb"
+        placedTime:
+          type: string
+          format: date-time
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+          example:
+            - storeProductId: 'dee85bcb'
+              price: "120000"
+              quantity: 5
+            - storeProductUd: 'dec734c0'
+              price: '50000'
+              quantity: 10
+    OrderItem:
+      type: object
+      description: Place order item
+      properties:
+        storeProductId:
+          type: string
+          example: "dee85bcb"
+        price:
+          type: string
+          example: "150000"
+        quantity:
+          type: integer
+          example: 10
+    ObjectReference:
+      type: object
+      description: Object reference (contains ID only)
+      properties:
+        id:
+          type: string
+          example: "dee85bcb"
+      required:
+        - id

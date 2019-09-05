@@ -1,0 +1,23 @@
+linters:
+  enable:
+    - golint
+    - gocyclo
+    - goconst
+    - unconvert
+    - goimports
+    - interfacer
+    - gosec
+    - dupl
+
+linters-settings:
+  errcheck:
+    exclude: errcheck_exclude.txt
+
+issues:
+  exclude-use-default: false
+  exclude-rules:
+
+    # already handled by errcheck
+    - linters:
+        - gosec
+      text: "G104:"
