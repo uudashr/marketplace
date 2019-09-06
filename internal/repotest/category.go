@@ -1,10 +1,11 @@
 package repotest
 
 import (
+	"reflect"
 	"testing"
 
-	"github.com/stretchr/testify/suite"
 	"github.com/uudashr/marketplace/internal/category"
+	"github.com/uudashr/marketplace/internal/fixture"
 )
 
 // SetupCategoryFixtureFunc functions for setting up category fixture.
@@ -16,61 +17,79 @@ type CategoryFixture interface {
 	TearDown()
 }
 
-// CategoryTestSuite is the test suite for category repository.
-type CategoryTestSuite struct {
-	suite.Suite
-	SetupFixture SetupCategoryFixtureFunc
-	fix          CategoryFixture
-}
+// CategorySuite runs the repository test for category.
+func CategorySuite(t *testing.T, setupFixture SetupCategoryFixtureFunc) {
+	t.Run("RetrieveStoredCategory", func(t *testing.T) {
+		fix := setupFixture(t)
+		defer fix.TearDown()
 
-// SetupTest setup function, runs before each test.
-func (suite *CategoryTestSuite) SetupTest() {
-	suite.fix = suite.SetupFixture(suite.T())
-}
+		cat := fixture.Category()
+		err := fix.Repository().Store(cat)
+		if err != nil {
+			t.Fatal("err:", err)
+		}
 
-// TearDownTest tear down function , runs before each test.
-func (suite *CategoryTestSuite) TearDownTest() {
-	suite.fix.TearDown()
-}
+		retCat, err := fix.Repository().CategoryByID(cat.ID())
+		if err != nil {
+			t.Fatal("err:", err)
+		}
 
-// TestRetrieveStoredCategory test whether we can retrieve stored category.
-func (suite *CategoryTestSuite) TestRetrieveStoredCategory() {
-	cat, err := category.New(category.NextID(), "Utilities")
-	suite.Require().NoError(err)
+		if got, want := retCat, cat; !reflect.DeepEqual(got, want) {
+			t.Errorf("got: %v, want: %v", got, want)
+		}
+	})
 
-	err = suite.fix.Repository().Store(cat)
-	suite.Require().NoError(err)
+	t.Run("EnsureUniqueCategoryName", func(t *testing.T) {
+		fix := setupFixture(t)
+		defer fix.TearDown()
 
-	retCat, err := suite.fix.Repository().CategoryByID(cat.ID())
-	suite.Require().NoError(err)
-	suite.Assert().Equal(cat, retCat)
-}
+		cat, err := category.New(category.NextID(), "Utilities")
+		if err != nil {
+			t.Fatal("err:", err)
+		}
 
-// TestUniqueCategoryName test whether the category name is unique.
-func (suite *CategoryTestSuite) TestUniqueCategoryName() {
-	cat, err := category.New(category.NextID(), "Utilities")
-	suite.Require().NoError(err)
+		err = fix.Repository().Store(cat)
+		if err != nil {
+			t.Fatal("err:", err)
+		}
 
-	err = suite.fix.Repository().Store(cat)
-	suite.Require().NoError(err)
+		// Duplicate
+		cat, err = category.New(category.NextID(), "Utilities")
+		if err != nil {
+			t.Fatal("err:", err)
+		}
 
-	// Duplicate
-	cat, err = category.New(category.NextID(), "Utilities")
-	suite.Require().NoError(err)
+		err = fix.Repository().Store(cat)
+		if err == nil {
+			t.Error("Expect error on duplicate name")
+		}
+	})
 
-	err = suite.fix.Repository().Store(cat)
-	suite.Require().Error(err)
-}
+	t.Run("EnsureStoredCategoryOnTheList", func(t *testing.T) {
+		fix := setupFixture(t)
+		defer fix.TearDown()
 
-// TestStoredCategoryOnTheList test whether stored category shows on the list.
-func (suite *CategoryTestSuite) TestStoredCategoryOnTheList() {
-	cat, err := category.New(category.NextID(), "Utilities")
-	suite.Require().NoError(err)
+		cat := fixture.Category()
+		err := fix.Repository().Store(cat)
+		if err != nil {
+			t.Fatal("err:", err)
+		}
 
-	err = suite.fix.Repository().Store(cat)
-	suite.Require().NoError(err)
+		retCats, err := fix.Repository().Categories()
+		if err != nil {
+			t.Fatal("err:", err)
+		}
 
-	retCats, err := suite.fix.Repository().Categories()
-	suite.Require().NoError(err)
-	suite.Require().Contains(retCats, cat)
+		var found bool
+		for _, v := range retCats {
+			if got, want := v, cat; reflect.DeepEqual(got, want) {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			t.Errorf("Expect found %v on list %v", cat, retCats)
+		}
+	})
 }

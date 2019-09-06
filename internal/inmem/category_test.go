@@ -3,7 +3,6 @@ package inmem_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/suite"
 	"github.com/uudashr/marketplace/internal/repotest"
 
 	"github.com/uudashr/marketplace/internal/inmem"
@@ -12,13 +11,11 @@ import (
 )
 
 func TestCategorySuite(t *testing.T) {
-	suite.Run(t, &repotest.CategoryTestSuite{
-		SetupFixture: repotest.SetupCategoryFixtureFunc(func(t *testing.T) repotest.CategoryFixture {
-			repo := inmem.NewCategoryRepository()
-			return &categoryFixture{
-				repo: repo,
-			}
-		}),
+	repotest.CategorySuite(t, func(t *testing.T) repotest.CategoryFixture {
+		repo := inmem.NewCategoryRepository()
+		return &categoryFixture{
+			repo: repo,
+		}
 	})
 }
 

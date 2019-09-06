@@ -5,7 +5,6 @@ package mysql_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/suite"
 	"github.com/uudashr/marketplace/internal/repotest"
 
 	"github.com/uudashr/marketplace/internal/mysql"
@@ -14,19 +13,17 @@ import (
 )
 
 func TestCategorySuite(t *testing.T) {
-	suite.Run(t, &repotest.CategoryTestSuite{
-		SetupFixture: repotest.SetupCategoryFixtureFunc(func(t *testing.T) repotest.CategoryFixture {
-			dbFix := setupDBFixture(t)
-			repo, err := mysql.NewCategoryRepository(dbFix.db)
-			if err != nil {
-				t.Fatal("err:", err)
-			}
+	repotest.CategorySuite(t, func(t *testing.T) repotest.CategoryFixture {
+		dbFix := setupDBFixture(t)
+		repo, err := mysql.NewCategoryRepository(dbFix.db)
+		if err != nil {
+			t.Fatal("err:", err)
+		}
 
-			return &categoryFixture{
-				dbFix: dbFix,
-				repo:  repo,
-			}
-		}),
+		return &categoryFixture{
+			dbFix: dbFix,
+			repo:  repo,
+		}
 	})
 }
 
