@@ -27,7 +27,7 @@ lint:
 .PHONY: dep-upgrade
 dep-upgrade:
 	@echo Upgrading dependencies
-	@go get -u
+	@go get -u all
 
 .PHONY: dep-tidy
 dep-tidy:
