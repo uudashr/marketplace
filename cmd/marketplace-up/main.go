@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	nethttp "net/http"
 	"os"
 	"time"
@@ -19,6 +20,7 @@ import (
 
 func main() {
 	flagListenAddr := flag.String("http-addr", ":8080", "HTTP listen address")
+	flagLogFormat := flag.String("log-format", "logfmt", "Log format (logfmt|json)")
 	flagHelp := flag.Bool("help", false, "Show help")
 	flag.Parse()
 
@@ -27,7 +29,14 @@ func main() {
 		os.Exit(0)
 	}
 
-	logger := log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
+	logWriter := log.NewSyncWriter(os.Stderr)
+	logger, err := logWithFormat(logWriter, *flagLogFormat)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		flag.Usage()
+		os.Exit(1)
+	}
+
 	mainLogger := log.With(logger, "component", "Main")
 
 	var g run.Group
@@ -64,6 +73,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+
 		server := &nethttp.Server{
 			Handler: handler,
 			Addr:    *flagListenAddr,
