@@ -78,7 +78,7 @@ func setupFixture(t *testing.T) *testFixture {
 	catRepo := new(catmocks.Repository)
 	svc, err := app.NewService(catRepo)
 	if err != nil {
-		panic(fmt.Errorf("fail to create Service: %w", err))
+		t.Fatal(fmt.Errorf("fail to create Service: %w", err))
 	}
 
 	return &testFixture{
