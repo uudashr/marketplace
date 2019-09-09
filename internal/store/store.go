@@ -5,6 +5,7 @@ import (
 
 	"github.com/rs/xid"
 	"github.com/shopspring/decimal"
+	"github.com/uudashr/marketplace/internal/product"
 )
 
 // Store represents store.
@@ -40,12 +41,12 @@ func (s Store) Name() string {
 }
 
 // OfferProduct offers a product.
-func (s Store) OfferProduct(productID, categoryID, name string, price decimal.Decimal, quantity int, description string) (*Product, error) {
+func (s Store) OfferProduct(productID, categoryID, name string, price decimal.Decimal, quantity int, description string) (*product.Product, error) {
 	if quantity == 0 {
 		return nil, errors.New("zero quantity")
 	}
 
-	return NewProduct(productID, s.ID(), categoryID, name, price, quantity, description)
+	return product.New(productID, s.ID(), categoryID, name, price, quantity, description)
 }
 
 // NextID returns unique id for store.

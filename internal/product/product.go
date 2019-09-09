@@ -1,4 +1,4 @@
-package store
+package product
 
 import (
 	"errors"
@@ -18,8 +18,8 @@ type Product struct {
 	description string
 }
 
-// NewProduct constructs new store product instance.
-func NewProduct(id, storeID, categoryID, name string, price decimal.Decimal, quantity int, description string) (*Product, error) {
+// New constructs new store product instance.
+func New(id, storeID, categoryID, name string, price decimal.Decimal, quantity int, description string) (*Product, error) {
 	if id == "" {
 		return nil, errors.New("empty id")
 	}
@@ -86,8 +86,8 @@ func (p Product) Description() string {
 	return p.description
 }
 
-// NextProductID returns unique id for the product.
-func NextProductID() string {
+// NextID returns unique id for the product.
+func NextID() string {
 	return xid.New().String()
 }
 

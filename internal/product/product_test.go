@@ -1,10 +1,11 @@
-package store_test
+package product_test
 
 import (
 	"testing"
 
 	"github.com/uudashr/marketplace/internal/category"
 
+	"github.com/uudashr/marketplace/internal/product"
 	"github.com/uudashr/marketplace/internal/store"
 
 	"github.com/shopspring/decimal"
@@ -22,7 +23,7 @@ func TestProduct(t *testing.T) {
 		expectErr   bool
 	}{
 		"Default": {
-			id:          store.NextProductID(),
+			id:          product.NextID(),
 			storeID:     store.NextID(),
 			categoryID:  category.NextID(),
 			name:        "Mineral Water",
@@ -31,7 +32,7 @@ func TestProduct(t *testing.T) {
 			description: "Some value",
 		},
 		"Zero quantity": {
-			id:          store.NextProductID(),
+			id:          product.NextID(),
 			storeID:     store.NextID(),
 			categoryID:  category.NextID(),
 			name:        "Mineral Water",
@@ -40,7 +41,7 @@ func TestProduct(t *testing.T) {
 			description: "Some value",
 		},
 		"Empty description": {
-			id:          store.NextProductID(),
+			id:          product.NextID(),
 			storeID:     store.NextID(),
 			categoryID:  category.NextID(),
 			name:        "Mineral Water",
@@ -49,7 +50,7 @@ func TestProduct(t *testing.T) {
 			description: "",
 		},
 		"Empty name": {
-			id:          store.NextProductID(),
+			id:          product.NextID(),
 			storeID:     store.NextID(),
 			categoryID:  category.NextID(),
 			name:        "",
@@ -59,7 +60,7 @@ func TestProduct(t *testing.T) {
 			expectErr:   true,
 		},
 		"Negative price": {
-			id:          store.NextProductID(),
+			id:          product.NextID(),
 			storeID:     store.NextID(),
 			categoryID:  category.NextID(),
 			name:        "Mineral Water",
@@ -69,7 +70,7 @@ func TestProduct(t *testing.T) {
 			expectErr:   true,
 		},
 		"Negative quantity": {
-			id:          store.NextProductID(),
+			id:          product.NextID(),
 			storeID:     store.NextID(),
 			categoryID:  category.NextID(),
 			name:        "Mineral Water",
@@ -82,7 +83,7 @@ func TestProduct(t *testing.T) {
 
 	for name, c := range cases {
 		t.Run(name, func(t *testing.T) {
-			p, err := store.NewProduct(c.id, c.storeID, c.categoryID, c.name, c.price, c.quantity, c.description)
+			p, err := product.New(c.id, c.storeID, c.categoryID, c.name, c.price, c.quantity, c.description)
 			if c.expectErr {
 				if err == nil {
 					t.Fatal("Expect err")
@@ -115,7 +116,7 @@ func TestProduct(t *testing.T) {
 			}
 
 			if got, want := p.Quantity(), c.quantity; got != want {
-				t.Errorf("Quantity got: %q, want: %q", got, want)
+				t.Errorf("Quantity got: %d, want: %d", got, want)
 			}
 
 			if got, want := p.Description(), c.description; got != want {
