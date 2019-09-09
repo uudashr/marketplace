@@ -1,0 +1,40 @@
+version: '3.7'
+services:
+  marketplace:
+    build: .
+    ports:
+      - 8080:8080
+    depends_on: 
+      - filebeat
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
+    ports: 
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - discovery.type=single-node
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.3.1
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./local/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml
+      - /var/lib/docker/containers:/var/lib/docker/containers
+      - /var/run/docker.sock:/var/run/docker.sock
+    user: root
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.3.1
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
+  
+  hearbeat:
+      image: docker.elastic.co/beats/heartbeat:7.3.1
+      depends_on:
+        - elasticsearch
+      volumes: 
+        - ./local/heartbeat.docker.yml:/usr/share/heartbeat/heartbeat.yml
