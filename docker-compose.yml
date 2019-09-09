@@ -40,11 +40,11 @@ services:
       - 5601:5601
   
   hearbeat:
-      image: docker.elastic.co/beats/heartbeat:7.3.1
-      depends_on:
-        - elasticsearch
-      volumes: 
-        - ./local/heartbeat.docker.yml:/usr/share/heartbeat/heartbeat.yml
+    image: docker.elastic.co/beats/heartbeat:7.3.1
+    depends_on:
+      - elasticsearch
+    volumes: 
+      - ./local/heartbeat.docker.yml:/usr/share/heartbeat/heartbeat.yml
 
   apm-server:
     image: docker.elastic.co/apm/apm-server:7.3.1
