@@ -16,6 +16,16 @@ import (
 	"github.com/uudashr/marketplace/internal/http/mocks"
 )
 
+func TestCheckHealthz(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	resp := httpGet(fix.handler, "/healthz")
+	if got, want := resp.StatusCode, nethttp.StatusOK; got != want {
+		t.Fatalf("StatusCode got: %d, want: %d", got, want)
+	}
+}
+
 func TestHandler_RegisterNewCategories(t *testing.T) {
 	fix := setupFixture(t)
 	defer fix.tearDown()

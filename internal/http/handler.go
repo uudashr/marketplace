@@ -72,6 +72,10 @@ func (d *delegate) retrieveCategoryByID(c echo.Context) error {
 	})
 }
 
+func (d *delegate) checkHealthz(c echo.Context) error {
+	return c.NoContent(http.StatusOK)
+}
+
 // NewHandler constructs new http handler.
 func NewHandler(appService AppService) (http.Handler, error) {
 	if appService == nil {
@@ -86,6 +90,8 @@ func NewHandler(appService AppService) (http.Handler, error) {
 	e.POST("/categories", d.registerNewCategory)
 	e.GET("/categories", d.retrieveCategories)
 	e.GET("/categories/:id", d.retrieveCategoryByID)
+
+	e.GET("/healthz", d.checkHealthz)
 
 	return e, nil
 }
