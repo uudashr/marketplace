@@ -24,4 +24,4 @@ FROM alpine:3.10.1
 # Copy binary from builder
 COPY --from=builder /app/marketplace-up /app/marketplace-up
 
-CMD ["/app/marketplace-up"]
+CMD ["/app/marketplace-up", "-http-addr=:8080", "-log-format=json"] 
