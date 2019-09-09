@@ -6,6 +6,13 @@ services:
       - 8080:8080
     depends_on: 
       - filebeat
+      - apm-server
+    environment: 
+      - ELASTIC_APM_SERVER_URL=apm-server:8200
+      - ELASTIC_APM_SERVICE_NAME=marketplace
+      - ELASTIC_APM_SERVICE_VERSION=1.0.0
+      - ELASTIC_APM_ENVIRONMENT=development
+      - ELASTIC_APM_IGNORE_URLS=/healthz
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
@@ -38,3 +45,10 @@ services:
         - elasticsearch
       volumes: 
         - ./local/heartbeat.docker.yml:/usr/share/heartbeat/heartbeat.yml
+
+  apm-server:
+    image: docker.elastic.co/apm/apm-server:7.3.1
+    volumes:
+      - ./local/apm-server.docker.yml:/etc/apm-server/apm-server.yml
+    depends_on: 
+      - elasticsearch

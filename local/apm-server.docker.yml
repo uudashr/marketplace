@@ -1,0 +1,4 @@
+output.elasticsearch:
+  hosts: '${ELASTICSEARCH_ADDRESS:elasticsearch:9200}'
+  username: '${ELASTICSEARCH_USERNAME:}'
+  password: '${ELASTICSEARCH_PASSWORD:}'
