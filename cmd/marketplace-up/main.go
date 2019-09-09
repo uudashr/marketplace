@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	nethttp "net/http"
 	"os"
 	"time"
@@ -17,6 +18,15 @@ import (
 )
 
 func main() {
+	flagListenAddr := flag.String("http-addr", ":8080", "HTTP listen address")
+	flagHelp := flag.Bool("help", false, "Show help")
+	flag.Parse()
+
+	if *flagHelp {
+		flag.Usage()
+		os.Exit(0)
+	}
+
 	logger := log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
 	mainLogger := log.With(logger, "component", "Main")
 
@@ -56,11 +66,11 @@ func main() {
 		}
 		server := &nethttp.Server{
 			Handler: handler,
-			Addr:    ":8080",
+			Addr:    *flagListenAddr,
 		}
 
 		g.Add(func() error {
-			httpLogger.Log("msg", "Start listening on port 8080")
+			httpLogger.Log("msg", "Start listening", "addr", *flagListenAddr)
 			if err := server.ListenAndServe(); err != nethttp.ErrServerClosed {
 				httpLogger.Log("msg", "Fail on ListenAndServe", "err", err)
 				return err
