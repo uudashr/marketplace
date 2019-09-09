@@ -35,7 +35,7 @@ func TestStore(t *testing.T) {
 			s, err := store.New(c.id, c.name)
 			if c.expectErr {
 				if err == nil {
-					t.Fatal("expect err")
+					t.Fatal("Expect err")
 				}
 				return
 			}

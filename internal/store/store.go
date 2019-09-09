@@ -40,12 +40,12 @@ func (s Store) Name() string {
 }
 
 // OfferProduct offers a product.
-func (s Store) OfferProduct(productID, categoryID string, price decimal.Decimal, quantity int) (*Product, error) {
+func (s Store) OfferProduct(productID, categoryID, name string, price decimal.Decimal, quantity int, description string) (*Product, error) {
 	if quantity == 0 {
 		return nil, errors.New("zero quantity")
 	}
 
-	return NewProduct(productID, s.ID(), categoryID, price, quantity)
+	return NewProduct(productID, s.ID(), categoryID, name, price, quantity, description)
 }
 
 // NextID returns unique id for store.
