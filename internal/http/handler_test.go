@@ -17,20 +17,15 @@ import (
 )
 
 func TestHandler_RegisterNewCategories(t *testing.T) {
-	appService := new(mocks.AppService)
-	defer mock.AssertExpectationsForObjects(t, appService)
-
-	handler, err := http.NewHandler(appService)
-	if err != nil {
-		t.Fatal("err:", err)
-	}
+	fix := setupFixture(t)
+	defer fix.tearDown()
 
 	cat := modelfixture.Category()
-	appService.On("RegisterNewCategory", app.RegisterNewCategoryCommand{
+	fix.appService.On("RegisterNewCategory", app.RegisterNewCategoryCommand{
 		Name: cat.Name(),
 	}).Return(cat, nil)
 
-	resp := httpPost(handler, "/categories", map[string]interface{}{
+	resp := httpPost(fix.handler, "/categories", map[string]interface{}{
 		"name": cat.Name(),
 	})
 	if got, want := resp.StatusCode, nethttp.StatusCreated; got != want {
@@ -43,18 +38,13 @@ func TestHandler_RegisterNewCategories(t *testing.T) {
 }
 
 func TestHandler_Categories(t *testing.T) {
-	appService := new(mocks.AppService)
-	defer mock.AssertExpectationsForObjects(t, appService)
-
-	handler, err := http.NewHandler(appService)
-	if err != nil {
-		t.Fatal("err:", err)
-	}
+	fix := setupFixture(t)
+	defer fix.tearDown()
 
 	cats := modelfixture.Categories(3)
-	appService.On("RetrieveCategories").Return(cats, nil)
+	fix.appService.On("RetrieveCategories").Return(cats, nil)
 
-	res := httpGet(handler, "/categories")
+	res := httpGet(fix.handler, "/categories")
 	if got, want := res.StatusCode, nethttp.StatusOK; got != want {
 		t.Fatalf("StatusCode got: %d, want: %d", got, want)
 	}
@@ -81,20 +71,15 @@ func TestHandler_Categories(t *testing.T) {
 }
 
 func TestHandler_CategoryByID(t *testing.T) {
-	appService := new(mocks.AppService)
-	defer mock.AssertExpectationsForObjects(t, appService)
-
-	handler, err := http.NewHandler(appService)
-	if err != nil {
-		t.Fatal("err:", err)
-	}
+	fix := setupFixture(t)
+	defer fix.tearDown()
 
 	cat := modelfixture.Category()
-	appService.On("RetrieveCategoryByID", app.RetrieveCategoryByIDCommand{
+	fix.appService.On("RetrieveCategoryByID", app.RetrieveCategoryByIDCommand{
 		ID: cat.ID(),
 	}).Return(cat, nil)
 
-	res := httpGet(handler, fmt.Sprintf("/categories/%s", cat.ID()))
+	res := httpGet(fix.handler, fmt.Sprintf("/categories/%s", cat.ID()))
 	if got, want := res.StatusCode, nethttp.StatusOK; got != want {
 		t.Fatalf("StatusCode got: %d, want: %d", got, want)
 	}
@@ -116,4 +101,29 @@ func TestHandler_CategoryByID(t *testing.T) {
 type categoryPayload struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
+}
+
+type testFixture struct {
+	t          *testing.T
+	appService *mocks.AppService
+	handler    nethttp.Handler
+}
+
+func setupFixture(t *testing.T) *testFixture {
+	appService := new(mocks.AppService)
+
+	handler, err := http.NewHandler(appService)
+	if err != nil {
+		t.Fatal(fmt.Errorf("Fail to create handler: %w", err))
+	}
+
+	return &testFixture{
+		t:          t,
+		appService: appService,
+		handler:    handler,
+	}
+}
+
+func (fix *testFixture) tearDown() {
+	mock.AssertExpectationsForObjects(fix.t, fix.appService)
 }
