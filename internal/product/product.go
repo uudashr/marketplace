@@ -91,8 +91,8 @@ func NextID() string {
 	return xid.New().String()
 }
 
-// ProductRepository is repository for the product.
-type ProductRepository interface {
+// Repository is repository for the product.
+type Repository interface {
 	Store(*Product) error
 	ProductsByStoreID(storeID string) ([]*Product, error)
 }
