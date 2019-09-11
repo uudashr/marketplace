@@ -28,11 +28,11 @@ type dbFixture struct {
 
 func (s *dbFixture) tearDown() {
 	if err := migrate.Down(migrate.AllAvailable); err != nil {
-		s.t.Error("fail to migrate down:", err)
+		s.t.Error("Fail to migrate down:", err)
 	}
 
 	if err := s.db.Client().Disconnect(context.TODO()); err != nil {
-		s.t.Error("fail to disconnect client:", err)
+		s.t.Error("Fail to disconnect client:", err)
 	}
 }
 
@@ -42,13 +42,13 @@ func setupDBFixture(t *testing.T) *dbFixture {
 	opts := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s", *dbAddress))
 	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
-		t.Fatal("err:", err)
+		t.Fatal("Fail to connect:", err)
 	}
 
 	db := client.Database(*dbName)
 	migrate.SetDatabase(db)
 	if err = migrate.Up(migrate.AllAvailable); err != nil {
-		t.Fatal("err:", err)
+		t.Fatal("Fail to migrate up:", err)
 	}
 
 	return &dbFixture{

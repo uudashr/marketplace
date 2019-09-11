@@ -19,7 +19,7 @@ func NewCategoryRepository(db *sql.DB) (*CategoryRepository, error) {
 	}, nil
 }
 
-// Store the category to the repository.
+// Store stores the category to the repository.
 func (r *CategoryRepository) Store(cat *category.Category) error {
 	res, err := r.db.Exec("INSERT INTO categories (id, name) VALUES (?, ?)", cat.ID(), cat.Name())
 	// TODO: how to handle unique name -> Error 1062: Duplicate entry
@@ -39,7 +39,7 @@ func (r *CategoryRepository) Store(cat *category.Category) error {
 	return nil
 }
 
-// CategoryByID on the repository.
+// CategoryByID retrieves category by id.
 func (r *CategoryRepository) CategoryByID(id string) (*category.Category, error) {
 	var (
 		name string
@@ -52,7 +52,7 @@ func (r *CategoryRepository) CategoryByID(id string) (*category.Category, error)
 	return category.New(id, name)
 }
 
-// Categories on the repository.
+// Categories retrieves categories.
 func (r *CategoryRepository) Categories() ([]*category.Category, error) {
 	rows, err := r.db.Query("SELECT id, name FROM categories")
 	if err != nil {

@@ -55,6 +55,7 @@ func NextID() string {
 }
 
 // Repository is repository for store.
+//go:generate mockery -name=Repository
 type Repository interface {
 	Store(*Store) error
 	StoreByID(id string) (*Store, error)

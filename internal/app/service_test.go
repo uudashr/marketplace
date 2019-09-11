@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"testing"
 
+	storemocks "github.com/uudashr/marketplace/internal/store/mocks"
+
 	modelfixture "github.com/uudashr/marketplace/internal/fixture"
 
 	"github.com/stretchr/testify/mock"
@@ -68,23 +70,45 @@ func TestRetrieveCategoryByID(t *testing.T) {
 	}
 }
 
+func TestRegisterNewStore(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	cmd := app.RegisterNewStoreCommand{
+		Name: "My Mart",
+	}
+
+	fix.storeRepo.On("Store", mock.Anything).Return(nil)
+	str, err := fix.service.RegisterNewStore(cmd)
+	if err != nil {
+		t.Fatal("err:", err)
+	}
+
+	if got, want := str.Name(), cmd.Name; got != want {
+		t.Errorf("Name got: %q, want: %q", got, want)
+	}
+}
+
 type testFixture struct {
-	t       *testing.T
-	catRepo *catmocks.Repository
-	service *app.Service
+	t         *testing.T
+	catRepo   *catmocks.Repository
+	storeRepo *storemocks.Repository
+	service   *app.Service
 }
 
 func setupFixture(t *testing.T) *testFixture {
 	catRepo := new(catmocks.Repository)
-	svc, err := app.NewService(catRepo)
+	storeRepo := new(storemocks.Repository)
+	svc, err := app.NewService(catRepo, storeRepo)
 	if err != nil {
 		t.Fatal(fmt.Errorf("fail to create Service: %w", err))
 	}
 
 	return &testFixture{
-		t:       t,
-		catRepo: catRepo,
-		service: svc,
+		t:         t,
+		catRepo:   catRepo,
+		storeRepo: storeRepo,
+		service:   svc,
 	}
 }
 

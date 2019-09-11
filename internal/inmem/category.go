@@ -12,7 +12,7 @@ type CategoryRepository struct {
 	nameIdx map[string]string
 }
 
-// NewCategoryRepository constructs new categorty repository.
+// NewCategoryRepository constructs new category repository.
 func NewCategoryRepository() *CategoryRepository {
 	return &CategoryRepository{
 		m:       make(map[string]category.Category),
@@ -20,7 +20,7 @@ func NewCategoryRepository() *CategoryRepository {
 	}
 }
 
-// Store category to repository.
+// Store stores/puts category.
 func (r *CategoryRepository) Store(cat *category.Category) error {
 	if _, exists := r.m[cat.ID()]; exists {
 		return errors.New("already exists")
@@ -35,7 +35,7 @@ func (r *CategoryRepository) Store(cat *category.Category) error {
 	return nil
 }
 
-// CategoryByID on the repository.
+// CategoryByID retrieves category by ID.
 func (r *CategoryRepository) CategoryByID(id string) (*category.Category, error) {
 	cat, found := r.m[id]
 	if !found {
@@ -45,7 +45,7 @@ func (r *CategoryRepository) CategoryByID(id string) (*category.Category, error)
 	return &cat, nil
 }
 
-// Categories on the repository.
+// Categories retrieves categories.
 func (r *CategoryRepository) Categories() ([]*category.Category, error) {
 	i := 0
 	cats := make([]*category.Category, len(r.m))

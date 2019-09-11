@@ -33,12 +33,12 @@ type dbFixture struct {
 func (s *dbFixture) tearDown() {
 	if err := s.m.Down(); err != nil {
 		if err != migrate.ErrNoChange {
-			s.t.Error("fail to execute migration down scripts", err)
+			s.t.Error("Fail to execute migration down scripts", err)
 		}
 	}
 
 	if err := s.db.Close(); err != nil {
-		s.t.Error("fail to close db:", err)
+		s.t.Error("Fail to close db:", err)
 	}
 }
 
@@ -46,26 +46,22 @@ func setupDBFixture(t *testing.T) *dbFixture {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?multiStatements=true&clientFoundRows=true&parseTime=true&loc=Local", *dbUser, *dbPassword, *dbAddress, *dbName)
 	db, err := sql.Open(driverName, dsn)
 	if err != nil {
-		t.Fatal("err:", err)
-	}
-
-	if err = db.Ping(); err != nil {
-		t.Fatal("err:", err)
+		t.Fatal("Fail to open DB:", err)
 	}
 
 	driver, err := mysql.WithInstance(db, &mysql.Config{})
 	if err != nil {
-		t.Fatal("err:", err)
+		t.Fatal("Fail to create driver:", err)
 	}
 
 	m, err := migrate.NewWithDatabaseInstance(*dbScripts, driverName, driver)
 	if err != nil {
-		t.Fatal("err:", err)
+		t.Fatal("Fail to create DB instance:", err)
 	}
 
 	if err := m.Up(); err != nil {
 		if err != migrate.ErrNoChange {
-			t.Error("fail to execute migration up scripts:", err)
+			t.Error("Fail to execute migration up scripts:", err)
 		}
 	}
 

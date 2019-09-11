@@ -81,8 +81,8 @@ type categoryDoc struct {
 	Name string `bson:"name"`
 }
 
-func (c categoryDoc) build() (*category.Category, error) {
-	return category.New(c.ID, c.Name)
+func (doc categoryDoc) build() (*category.Category, error) {
+	return category.New(doc.ID, doc.Name)
 }
 
 func buildCategoryDoc(cat *category.Category) categoryDoc {

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/uudashr/marketplace/internal/store"
+
 	"github.com/uudashr/marketplace/internal/category"
 
 	"github.com/uudashr/marketplace/internal/app"
@@ -18,6 +20,7 @@ type AppService interface {
 	RegisterNewCategory(app.RegisterNewCategoryCommand) (*category.Category, error)
 	RetrieveCategories() ([]*category.Category, error)
 	RetrieveCategoryByID(app.RetrieveCategoryByIDCommand) (*category.Category, error)
+	RegisterNewStore(app.RegisterNewStoreCommand) (*store.Store, error)
 }
 
 type delegate struct {
@@ -72,6 +75,23 @@ func (d *delegate) retrieveCategoryByID(c echo.Context) error {
 	})
 }
 
+func (d *delegate) registerNewStore(c echo.Context) error {
+	var p registerNewStorePayload
+	if err := c.Bind(&p); err != nil {
+		return err
+	}
+
+	str, err := d.appService.RegisterNewStore(app.RegisterNewStoreCommand{
+		Name: p.Name,
+	})
+	if err != nil {
+		return err
+	}
+
+	c.Response().Header().Add("Location", fmt.Sprintf("/stores/%s", str.ID()))
+	return c.NoContent(http.StatusCreated)
+}
+
 func (d *delegate) checkHealthz(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
@@ -91,6 +111,8 @@ func NewHandler(appService AppService) (http.Handler, error) {
 	e.GET("/categories", d.retrieveCategories)
 	e.GET("/categories/:id", d.retrieveCategoryByID)
 
+	e.POST("/stores", d.registerNewStore)
+
 	e.GET("/healthz", d.checkHealthz)
 
 	return e, nil
@@ -102,5 +124,9 @@ type registerNewCategoryPayload struct {
 
 type categoryPayload struct {
 	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type registerNewStorePayload struct {
 	Name string `json:"name"`
 }

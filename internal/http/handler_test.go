@@ -108,6 +108,27 @@ func TestHandler_CategoryByID(t *testing.T) {
 	}
 }
 
+func TestHandler_RegisterNewStore(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	str := modelfixture.Store()
+	fix.appService.On("RegisterNewStore", app.RegisterNewStoreCommand{
+		Name: str.Name(),
+	}).Return(str, nil)
+
+	resp := httpPost(fix.handler, "/stores", map[string]interface{}{
+		"name": str.Name(),
+	})
+	if got, want := resp.StatusCode, nethttp.StatusCreated; got != want {
+		t.Fatalf("StatusCode got: %d, want: %d", got, want)
+	}
+
+	if got, want := resp.Header.Get("Location"), fmt.Sprintf("/stores/%s", str.ID()); got != want {
+		t.Errorf("Location got: %q, want: %q", got, want)
+	}
+}
+
 type categoryPayload struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
