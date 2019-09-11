@@ -108,6 +108,21 @@ func TestHandler_CategoryByID(t *testing.T) {
 	}
 }
 
+func TestHandler_CategoryByID_notFound(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	cat := modelfixture.Category()
+	fix.appService.On("RetrieveCategoryByID", app.RetrieveCategoryByIDCommand{
+		ID: cat.ID(),
+	}).Return(nil, nil)
+
+	res := httpGet(fix.handler, fmt.Sprintf("/categories/%s", cat.ID()))
+	if got, want := res.StatusCode, nethttp.StatusNotFound; got != want {
+		t.Fatalf("StatusCode got: %d, want: %d", got, want)
+	}
+}
+
 func TestHandler_RegisterNewStore(t *testing.T) {
 	fix := setupFixture(t)
 	defer fix.tearDown()

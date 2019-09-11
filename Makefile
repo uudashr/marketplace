@@ -1,4 +1,4 @@
-SOURCES := $(shell find . -name '*.go' -type f -not -path './vendor/*'  -not -path '*/mocks/*')
+SOURCES := $(shell find . -name '*.go' -type f -not -path './vendor/*' -not -path '*/mocks/*' -not -path '*/migrations/*')
 
 MYSQL_DB_USER ?= marketplace
 MYSQL_DB_PASSWORD ?= secret

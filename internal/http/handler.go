@@ -69,6 +69,10 @@ func (d *delegate) retrieveCategoryByID(c echo.Context) error {
 		return err
 	}
 
+	if cat == nil {
+		return echo.ErrNotFound
+	}
+
 	return c.JSON(http.StatusOK, categoryPayload{
 		ID:   cat.ID(),
 		Name: cat.Name(),

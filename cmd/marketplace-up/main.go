@@ -64,7 +64,8 @@ func main() {
 	{
 		httpLogger := log.With(logger, "component", "HTTP")
 		categoryRepo := inmem.NewCategoryRepository()
-		appService, err := app.NewService(categoryRepo)
+		storeRepo := inmem.NewStoreRepository()
+		appService, err := app.NewService(categoryRepo, storeRepo)
 		if err != nil {
 			panic(err)
 		}
