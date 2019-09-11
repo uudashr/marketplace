@@ -32,16 +32,16 @@ const (
 	Rejected
 )
 
-// Fulfillment represents the fulfillment.
-type Fulfillment struct {
+// Order represents the order.
+type Order struct {
 	id          string
 	items       []*Item
 	status      Status
 	createdTime time.Time
 }
 
-// New constructs new Fulfillment instance.
-func New(id string, items []*Item, status Status, createdTime time.Time) (*Fulfillment, error) {
+// New constructs new order instance.
+func New(id string, items []*Item, status Status, createdTime time.Time) (*Order, error) {
 	if id == "" {
 		return nil, errors.New("empty id")
 	}
@@ -54,7 +54,7 @@ func New(id string, items []*Item, status Status, createdTime time.Time) (*Fulfi
 		return nil, errors.New("zero createdTime")
 	}
 
-	return &Fulfillment{
+	return &Order{
 		id:          id,
 		items:       items,
 		status:      status,
@@ -62,42 +62,42 @@ func New(id string, items []*Item, status Status, createdTime time.Time) (*Fulfi
 	}, nil
 }
 
-// ID of the fulfillment.
-func (o Fulfillment) ID() string {
+// ID of the order.
+func (o Order) ID() string {
 	return o.id
 }
 
-// Items of the fulfillment.
-func (o Fulfillment) Items() []*Item {
+// Items of the order.
+func (o Order) Items() []*Item {
 	return o.items
 }
 
-// Status of the fulfillment.
-func (o Fulfillment) Status() Status {
+// Status of the order.
+func (o Order) Status() Status {
 	return o.status
 }
 
-// CreatedTime of the fulfillment.
-func (o Fulfillment) CreatedTime() time.Time {
+// CreatedTime of the order.
+func (o Order) CreatedTime() time.Time {
 	return o.createdTime
 }
 
-// NextID returns unique id for Order.
+// NextID returns unique id for order.
 func NextID() string {
 	return xid.New().String()
 }
 
-// Item represents the fulfillment item (or line item).
+// Item represents the order item (or line item).
 type Item struct {
-	storeProductID string
-	price          decimal.Decimal
-	quantity       int
+	productID string
+	price     decimal.Decimal
+	quantity  int
 }
 
 // NewItem constructs new item.
-func NewItem(storeProductID string, price decimal.Decimal, quantity int) (*Item, error) {
-	if storeProductID == "" {
-		return nil, errors.New("empty storeProductID")
+func NewItem(productID string, price decimal.Decimal, quantity int) (*Item, error) {
+	if productID == "" {
+		return nil, errors.New("empty productID")
 	}
 
 	if !price.GreaterThan(decimal.Zero) {
@@ -109,15 +109,15 @@ func NewItem(storeProductID string, price decimal.Decimal, quantity int) (*Item,
 	}
 
 	return &Item{
-		storeProductID: storeProductID,
-		price:          price,
-		quantity:       quantity,
+		productID: productID,
+		price:     price,
+		quantity:  quantity,
 	}, nil
 }
 
-// StoreProductID of the item.
-func (i Item) StoreProductID() string {
-	return i.storeProductID
+// ProductID of the item.
+func (i Item) ProductID() string {
+	return i.productID
 }
 
 // Price of the item.
