@@ -1,9 +1,9 @@
-package category_test
+package product_test
 
 import (
 	"testing"
 
-	"github.com/uudashr/marketplace/internal/category"
+	"github.com/uudashr/marketplace/internal/product"
 )
 
 func TestCategory(t *testing.T) {
@@ -13,7 +13,7 @@ func TestCategory(t *testing.T) {
 		ExpectError bool
 	}{
 		"Default": {
-			ID:   category.NextID(),
+			ID:   product.NextCategoryID(),
 			Name: "Utilities",
 		},
 		"Empty ID": {
@@ -22,7 +22,7 @@ func TestCategory(t *testing.T) {
 			ExpectError: true,
 		},
 		"Empty Name": {
-			ID:          category.NextID(),
+			ID:   product.NextCategoryID(),
 			Name:        "",
 			ExpectError: true,
 		},
@@ -30,7 +30,7 @@ func TestCategory(t *testing.T) {
 
 	for k, c := range cases {
 		t.Run(k, func(t *testing.T) {
-			cat, err := category.New(c.ID, c.Name)
+			cat, err := product.NewCategory(c.ID, c.Name)
 			if c.ExpectError {
 				if err == nil {
 					t.Errorf("Expecting error for case: %q", k)

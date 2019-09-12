@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/uudashr/marketplace/internal/app"
-	catmocks "github.com/uudashr/marketplace/internal/category/mocks"
+	prodmocks "github.com/uudashr/marketplace/internal/product/mocks"
 )
 
 func TestRegisterNewCategory(t *testing.T) {
@@ -91,13 +91,13 @@ func TestRegisterNewStore(t *testing.T) {
 
 type testFixture struct {
 	t         *testing.T
-	catRepo   *catmocks.Repository
+	catRepo   *prodmocks.CategoryRepository
 	storeRepo *storemocks.Repository
 	service   *app.Service
 }
 
 func setupFixture(t *testing.T) *testFixture {
-	catRepo := new(catmocks.Repository)
+	catRepo := new(prodmocks.CategoryRepository)
 	storeRepo := new(storemocks.Repository)
 	svc, err := app.NewService(catRepo, storeRepo)
 	if err != nil {

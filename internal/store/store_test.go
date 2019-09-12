@@ -5,7 +5,6 @@ import (
 
 	"github.com/shopspring/decimal"
 
-	"github.com/uudashr/marketplace/internal/category"
 	"github.com/uudashr/marketplace/internal/product"
 	"github.com/uudashr/marketplace/internal/store"
 )
@@ -71,7 +70,7 @@ func TestOfferProduct(t *testing.T) {
 	}{
 		"Default": {
 			id:          product.NextID(),
-			categoryID:  category.NextID(),
+			categoryID:  product.NextCategoryID(),
 			name:        "Mineral Water",
 			price:       decimal.NewFromFloat(2500.1),
 			quantity:    100,
@@ -79,7 +78,7 @@ func TestOfferProduct(t *testing.T) {
 		},
 		"Zero quantity": {
 			id:          product.NextID(),
-			categoryID:  category.NextID(),
+			categoryID:  product.NextCategoryID(),
 			name:        "Mineral Water",
 			price:       decimal.NewFromFloat(2500.1),
 			quantity:    0,
@@ -88,7 +87,7 @@ func TestOfferProduct(t *testing.T) {
 		},
 		"Negative quantity": {
 			id:          product.NextID(),
-			categoryID:  category.NextID(),
+			categoryID:  product.NextCategoryID(),
 			name:        "Mineral Water",
 			price:       decimal.NewFromFloat(2500.1),
 			quantity:    -1,

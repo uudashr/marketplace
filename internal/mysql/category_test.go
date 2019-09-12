@@ -9,7 +9,7 @@ import (
 
 	"github.com/uudashr/marketplace/internal/mysql"
 
-	"github.com/uudashr/marketplace/internal/category"
+	"github.com/uudashr/marketplace/internal/product"
 )
 
 func TestCategorySuite(t *testing.T) {
@@ -32,7 +32,7 @@ type categoryFixture struct {
 	repo  *mysql.CategoryRepository
 }
 
-func (fix *categoryFixture) Repository() category.Repository {
+func (fix *categoryFixture) Repository() product.CategoryRepository {
 	return fix.repo
 }
 

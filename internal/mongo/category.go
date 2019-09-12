@@ -3,25 +3,25 @@ package mongo
 import (
 	"context"
 
-	"github.com/uudashr/marketplace/internal/category"
+	"github.com/uudashr/marketplace/internal/product"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// CategoryRepository is repository for Category.
+// CategoryRepository is repository for product category.
 type CategoryRepository struct {
 	db *mongo.Database
 }
 
-// NewCategoryRepository constructs new category repository.
+// NewCategoryRepository constructs new product category repository.
 func NewCategoryRepository(db *mongo.Database) (*CategoryRepository, error) {
 	return &CategoryRepository{
 		db: db,
 	}, nil
 }
 
-// Store the category to the repository.
-func (r *CategoryRepository) Store(cat *category.Category) error {
+// Store stores the product category.
+func (r *CategoryRepository) Store(cat *product.Category) error {
 	_, err := r.db.Collection("categories").InsertOne(context.TODO(), buildCategoryDoc(cat))
 
 	// TODO: how to handle unique name
@@ -32,8 +32,8 @@ func (r *CategoryRepository) Store(cat *category.Category) error {
 	return nil
 }
 
-// CategoryByID on the repository.
-func (r *CategoryRepository) CategoryByID(id string) (*category.Category, error) {
+// CategoryByID retrieves product category by ID.
+func (r *CategoryRepository) CategoryByID(id string) (*product.Category, error) {
 	res := r.db.Collection("categories").FindOne(context.TODO(), bson.M{"_id": id})
 	if err := res.Err(); err != nil {
 		return nil, err
@@ -47,8 +47,8 @@ func (r *CategoryRepository) CategoryByID(id string) (*category.Category, error)
 	return doc.build()
 }
 
-// Categories on the repository.
-func (r *CategoryRepository) Categories() ([]*category.Category, error) {
+// Categories retrieves product categories.
+func (r *CategoryRepository) Categories() ([]*product.Category, error) {
 	cur, err := r.db.Collection("categories").Find(context.TODO(), bson.M{})
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (r *CategoryRepository) Categories() ([]*category.Category, error) {
 		_ = cur.Close(context.TODO())
 	}()
 
-	var out []*category.Category
+	var out []*product.Category
 	for cur.Next(context.TODO()) {
 		var doc categoryDoc
 		if err := cur.Decode(&doc); err != nil {
@@ -81,11 +81,11 @@ type categoryDoc struct {
 	Name string `bson:"name"`
 }
 
-func (doc categoryDoc) build() (*category.Category, error) {
-	return category.New(doc.ID, doc.Name)
+func (doc categoryDoc) build() (*product.Category, error) {
+	return product.NewCategory(doc.ID, doc.Name)
 }
 
-func buildCategoryDoc(cat *category.Category) categoryDoc {
+func buildCategoryDoc(cat *product.Category) categoryDoc {
 	return categoryDoc{
 		ID:   cat.ID(),
 		Name: cat.Name(),

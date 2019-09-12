@@ -7,7 +7,7 @@ import (
 
 	"github.com/uudashr/marketplace/internal/store"
 
-	"github.com/uudashr/marketplace/internal/category"
+	"github.com/uudashr/marketplace/internal/product"
 
 	"github.com/uudashr/marketplace/internal/app"
 
@@ -17,9 +17,9 @@ import (
 // AppService represents application service.
 //go:generate mockery -name=AppService
 type AppService interface {
-	RegisterNewCategory(app.RegisterNewCategoryCommand) (*category.Category, error)
-	RetrieveCategories() ([]*category.Category, error)
-	RetrieveCategoryByID(app.RetrieveCategoryByIDCommand) (*category.Category, error)
+	RegisterNewCategory(app.RegisterNewCategoryCommand) (*product.Category, error)
+	RetrieveCategories() ([]*product.Category, error)
+	RetrieveCategoryByID(app.RetrieveCategoryByIDCommand) (*product.Category, error)
 	RegisterNewStore(app.RegisterNewStoreCommand) (*store.Store, error)
 }
 

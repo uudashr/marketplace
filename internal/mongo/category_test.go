@@ -5,7 +5,7 @@ package mongo_test
 import (
 	"testing"
 
-	"github.com/uudashr/marketplace/internal/category"
+	"github.com/uudashr/marketplace/internal/product"
 
 	"github.com/uudashr/marketplace/internal/mongo"
 
@@ -32,7 +32,7 @@ type categoryFixture struct {
 	repo  *mongo.CategoryRepository
 }
 
-func (fix *categoryFixture) Repository() category.Repository {
+func (fix *categoryFixture) Repository() product.CategoryRepository {
 	return fix.repo
 }
 

@@ -1,4 +1,4 @@
-package category
+package product
 
 import (
 	"errors"
@@ -12,8 +12,8 @@ type Category struct {
 	name string
 }
 
-// New constructs new category instance.
-func New(id, name string) (*Category, error) {
+// NewCategory constructs new category instance.
+func NewCategory(id, name string) (*Category, error) {
 	if id == "" {
 		return nil, errors.New("empty id")
 	}
@@ -39,13 +39,13 @@ func (c Category) Name() string {
 }
 
 // NextID returns unique id for category.
-func NextID() string {
+func NextCategoryID() string {
 	return xid.New().String()
 }
 
-// Repository is repository for category.
-//go:generate mockery -name=Repository
-type Repository interface {
+// CategoryRepository is repository for category.
+//go:generate mockery -name=CategoryRepository
+type CategoryRepository interface {
 	Store(*Category) error
 	CategoryByID(id string) (*Category, error)
 	Categories() ([]*Category, error)

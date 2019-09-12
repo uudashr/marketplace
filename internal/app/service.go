@@ -5,17 +5,17 @@ import (
 
 	"github.com/uudashr/marketplace/internal/store"
 
-	"github.com/uudashr/marketplace/internal/category"
+	"github.com/uudashr/marketplace/internal/product"
 )
 
 // Service is the application service.
 type Service struct {
-	categoryRepo category.Repository
+	categoryRepo product.CategoryRepository
 	storeRepo    store.Repository
 }
 
 // NewService constructs new service.
-func NewService(categoryRepo category.Repository, storeRepo store.Repository) (*Service, error) {
+func NewService(categoryRepo product.CategoryRepository, storeRepo store.Repository) (*Service, error) {
 	if categoryRepo == nil {
 		return nil, errors.New("nil categoryRepo")
 	}
@@ -31,8 +31,8 @@ func NewService(categoryRepo category.Repository, storeRepo store.Repository) (*
 }
 
 // RegisterNewCategory registers new category.
-func (svc *Service) RegisterNewCategory(cmd RegisterNewCategoryCommand) (*category.Category, error) {
-	cat, err := category.New(category.NextID(), cmd.Name)
+func (svc *Service) RegisterNewCategory(cmd RegisterNewCategoryCommand) (*product.Category, error) {
+	cat, err := product.NewCategory(product.NextCategoryID(), cmd.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -46,12 +46,12 @@ func (svc *Service) RegisterNewCategory(cmd RegisterNewCategoryCommand) (*catego
 }
 
 // RetrieveCategories retrieves categories.
-func (svc *Service) RetrieveCategories() ([]*category.Category, error) {
+func (svc *Service) RetrieveCategories() ([]*product.Category, error) {
 	return svc.categoryRepo.Categories()
 }
 
 // RetrieveCategoryByID retrieves category by id.
-func (svc *Service) RetrieveCategoryByID(cmd RetrieveCategoryByIDCommand) (*category.Category, error) {
+func (svc *Service) RetrieveCategoryByID(cmd RetrieveCategoryByIDCommand) (*product.Category, error) {
 	return svc.categoryRepo.CategoryByID(cmd.ID)
 }
 

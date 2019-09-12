@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/uudashr/marketplace/internal/category"
 	"github.com/uudashr/marketplace/internal/fixture"
+	"github.com/uudashr/marketplace/internal/product"
 )
 
 // SetupCategoryFixtureFunc functions for setting up category fixture.
@@ -13,7 +13,7 @@ type SetupCategoryFixtureFunc func(t *testing.T) CategoryFixture
 
 // CategoryFixture is test fixture for category.
 type CategoryFixture interface {
-	Repository() category.Repository
+	Repository() product.CategoryRepository
 	TearDown()
 }
 
@@ -43,7 +43,7 @@ func CategorySuite(t *testing.T, setupFixture SetupCategoryFixtureFunc) {
 		fix := setupFixture(t)
 		defer fix.TearDown()
 
-		cat, err := category.New(category.NextID(), "Utilities")
+		cat, err := product.NewCategory(product.NextCategoryID(), "Utilities")
 		if err != nil {
 			t.Fatal("err:", err)
 		}
@@ -54,7 +54,7 @@ func CategorySuite(t *testing.T, setupFixture SetupCategoryFixtureFunc) {
 		}
 
 		// Duplicate
-		cat, err = category.New(category.NextID(), "Utilities")
+		cat, err = product.NewCategory(product.NextCategoryID(), "Utilities")
 		if err != nil {
 			t.Fatal("err:", err)
 		}

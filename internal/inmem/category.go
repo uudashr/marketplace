@@ -3,25 +3,25 @@ package inmem
 import (
 	"errors"
 
-	"github.com/uudashr/marketplace/internal/category"
+	"github.com/uudashr/marketplace/internal/product"
 )
 
-// CategoryRepository is repository for Category.
+// CategoryRepository is repository for product category.
 type CategoryRepository struct {
-	m       map[string]category.Category
+	m       map[string]product.Category
 	nameIdx map[string]string
 }
 
-// NewCategoryRepository constructs new category repository.
+// NewCategoryRepository constructs new product category repository.
 func NewCategoryRepository() *CategoryRepository {
 	return &CategoryRepository{
-		m:       make(map[string]category.Category),
+		m:       make(map[string]product.Category),
 		nameIdx: make(map[string]string),
 	}
 }
 
-// Store stores/puts category.
-func (r *CategoryRepository) Store(cat *category.Category) error {
+// Store stores the product category.
+func (r *CategoryRepository) Store(cat *product.Category) error {
 	if _, exists := r.m[cat.ID()]; exists {
 		return errors.New("already exists")
 	}
@@ -35,8 +35,8 @@ func (r *CategoryRepository) Store(cat *category.Category) error {
 	return nil
 }
 
-// CategoryByID retrieves category by ID.
-func (r *CategoryRepository) CategoryByID(id string) (*category.Category, error) {
+// CategoryByID retrieves product category by ID.
+func (r *CategoryRepository) CategoryByID(id string) (*product.Category, error) {
 	cat, found := r.m[id]
 	if !found {
 		return nil, nil
@@ -45,10 +45,10 @@ func (r *CategoryRepository) CategoryByID(id string) (*category.Category, error)
 	return &cat, nil
 }
 
-// Categories retrieves categories.
-func (r *CategoryRepository) Categories() ([]*category.Category, error) {
+// Categories retrieves product categories.
+func (r *CategoryRepository) Categories() ([]*product.Category, error) {
 	i := 0
-	cats := make([]*category.Category, len(r.m))
+	cats := make([]*product.Category, len(r.m))
 	for _, v := range r.m {
 		cat := v
 		cats[i] = &cat

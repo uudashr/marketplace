@@ -4,23 +4,23 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/uudashr/marketplace/internal/category"
+	"github.com/uudashr/marketplace/internal/product"
 )
 
-// CategoryRepository is repository for Category.
+// CategoryRepository is repository for product category.
 type CategoryRepository struct {
 	db *sql.DB
 }
 
-// NewCategoryRepository constructs new category repository.
+// NewCategoryRepository constructs new product category repository.
 func NewCategoryRepository(db *sql.DB) (*CategoryRepository, error) {
 	return &CategoryRepository{
 		db: db,
 	}, nil
 }
 
-// Store stores the category to the repository.
-func (r *CategoryRepository) Store(cat *category.Category) error {
+// Store stores the product category to the repository.
+func (r *CategoryRepository) Store(cat *product.Category) error {
 	res, err := r.db.Exec("INSERT INTO categories (id, name) VALUES (?, ?)", cat.ID(), cat.Name())
 	// TODO: how to handle unique name -> Error 1062: Duplicate entry
 	if err != nil {
@@ -39,8 +39,8 @@ func (r *CategoryRepository) Store(cat *category.Category) error {
 	return nil
 }
 
-// CategoryByID retrieves category by id.
-func (r *CategoryRepository) CategoryByID(id string) (*category.Category, error) {
+// CategoryByID retrieves product category by id.
+func (r *CategoryRepository) CategoryByID(id string) (*product.Category, error) {
 	var (
 		name string
 	)
@@ -49,17 +49,17 @@ func (r *CategoryRepository) CategoryByID(id string) (*category.Category, error)
 		return nil, err
 	}
 
-	return category.New(id, name)
+	return product.NewCategory(id, name)
 }
 
-// Categories retrieves categories.
-func (r *CategoryRepository) Categories() ([]*category.Category, error) {
+// Categories retrieves product categories.
+func (r *CategoryRepository) Categories() ([]*product.Category, error) {
 	rows, err := r.db.Query("SELECT id, name FROM categories")
 	if err != nil {
 		return nil, err
 	}
 
-	var out []*category.Category
+	var out []*product.Category
 	for rows.Next() {
 		var (
 			id   string
@@ -69,7 +69,7 @@ func (r *CategoryRepository) Categories() ([]*category.Category, error) {
 			return nil, err
 		}
 
-		cat, err := category.New(id, name)
+		cat, err := product.NewCategory(id, name)
 		if err != nil {
 			return nil, err
 		}

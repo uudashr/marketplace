@@ -4,6 +4,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/uudashr/marketplace/internal/product"
+
 	"github.com/rs/xid"
 
 	"github.com/shopspring/decimal"

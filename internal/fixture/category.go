@@ -2,13 +2,12 @@ package fixture
 
 import (
 	"github.com/icrowley/fake"
-
-	"github.com/uudashr/marketplace/internal/category"
+	"github.com/uudashr/marketplace/internal/product"
 )
 
 // Category fixture.
-func Category() *category.Category {
-	cat, err := category.New(category.NextID(), fake.Industry())
+func Category() *product.Category {
+	cat, err := product.NewCategory(product.NextCategoryID(), fake.Industry())
 	if err != nil {
 		panic(err)
 	}
@@ -16,8 +15,8 @@ func Category() *category.Category {
 }
 
 // Categories fixture.
-func Categories(n int) []*category.Category {
-	out := make([]*category.Category, n)
+func Categories(n int) []*product.Category {
+	out := make([]*product.Category, n)
 	for i := 0; i < n; i++ {
 		out[i] = Category()
 	}
