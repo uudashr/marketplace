@@ -38,7 +38,7 @@ func (c Category) Name() string {
 	return c.name
 }
 
-// NextID returns unique id for category.
+// NextCategoryID returns unique id for category.
 func NextCategoryID() string {
 	return xid.New().String()
 }

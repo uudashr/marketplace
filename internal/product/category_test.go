@@ -22,7 +22,7 @@ func TestCategory(t *testing.T) {
 			ExpectError: true,
 		},
 		"Empty Name": {
-			ID:   product.NextCategoryID(),
+			ID:          product.NextCategoryID(),
 			Name:        "",
 			ExpectError: true,
 		},
