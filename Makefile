@@ -12,10 +12,6 @@ MONGO_DB_ADDRESS ?= 127.0.0.1:${MONGO_DB_PORT}
 MONGO_DB_NAME ?= marketplace_test
 MONGO_DB_CONTAINER_NAME ?= marketplace-mongo
 
-ELASTICSEARCH_NETWORK_NAME ?= elasticsearch
-ELASTICSEARCH_CONTAINER_NAME ?= marketplace-elasticsearch
-ELASTICSEARCH_KIBANA_CONTAINER_NAME ?= marketplace-kibana
-
 # Linter
 .PHONY: prepare-lint
 prepare-lint:
@@ -61,26 +57,6 @@ docker-mongo-up:
 .PHONY: docker-mongo-down
 docker-mongo-down:
 	@docker stop $(MONGO_DB_CONTAINER_NAME)
-
-# Elasticsearch
-.PHONY: docker-elasticsearch-up
-docker-elasticsearch-up:
-	@docker network create $(ELASTICSEARCH_NETWORK_NAME) || true
-	@docker run --rm -d --name $(ELASTICSEARCH_CONTAINER_NAME) --net $(ELASTICSEARCH_NETWORK_NAME) -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.3.1 && docker logs -f $(ELASTICSEARCH_CONTAINER_NAME)
-
-.PHONY: docker-elasticsearch-down
-docker-elasticsearch-down:
-	@docker stop $(ELASTICSEARCH_CONTAINER_NAME) || true
-	@docker network rm $(ELASTICSEARCH_NETWORK_NAME)
-
-# Kibana
-.PHONY: docker-kibana-up
-docker-kibana-up:
-	@docker run --rm -d --name $(ELASTICSEARCH_KIBANA_CONTAINER_NAME) --net $(ELASTICSEARCH_NETWORK_NAME) --link $(ELASTICSEARCH_CONTAINER_NAME):elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.3.1 && docker logs -f $(ELASTICSEARCH_KIBANA_CONTAINER_NAME)
-
-.PHONY: docker-kibana-down
-docker-kibana-down:
-	@docker stop $(ELASTICSEARCH_KIBANA_CONTAINER_NAME)
 
 # MySQL migrations
 .PHONY: mysql-migrate-up
