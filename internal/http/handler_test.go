@@ -80,7 +80,7 @@ func TestHandler_Categories(t *testing.T) {
 	}
 }
 
-func TestHandler_CategoryByID(t *testing.T) {
+func TestHandler_CategoryByID(t *testing.T) { // nolint:dupl
 	fix := setupFixture(t)
 	defer fix.tearDown()
 
@@ -144,7 +144,7 @@ func TestHandler_RegisterNewStore(t *testing.T) {
 	}
 }
 
-func TestHandler_StoreByID(t *testing.T) {
+func TestHandler_StoreByID(t *testing.T) { // nolint:dupl
 	fix := setupFixture(t)
 	defer fix.tearDown()
 
