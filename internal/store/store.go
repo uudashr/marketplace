@@ -63,4 +63,5 @@ func NextID() string {
 type Repository interface {
 	Store(*Store) error
 	StoreByID(id string) (*Store, error)
+	Stores() ([]*Store, error)
 }

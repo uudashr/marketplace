@@ -65,4 +65,32 @@ func StoreSuite(t *testing.T, setupFixture SetupStoreFixtureFunc) {
 			t.Error("Expect error on duplicate name")
 		}
 	})
+
+	t.Run("EnsureStoredStoreOnTheList", func(t *testing.T) {
+		fix := setupFixture(t)
+		defer fix.TearDown()
+
+		str := fixture.Store()
+		err := fix.Repository().Store(str)
+		if err != nil {
+			t.Fatal("err:", err)
+		}
+
+		retStrs, err := fix.Repository().Stores()
+		if err != nil {
+			t.Fatal("err:", err)
+		}
+
+		var found bool
+		for _, v := range retStrs {
+			if got, want := v, str; reflect.DeepEqual(got, want) {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			t.Errorf("Expect found %v on list %v", str, retStrs)
+		}
+	})
 }

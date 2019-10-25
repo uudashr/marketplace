@@ -80,7 +80,7 @@ func TestHandler_Categories(t *testing.T) {
 	}
 }
 
-func TestHandler_CategoryByID(t *testing.T) { // nolint:dupl
+func TestHandler_CategoryByID(t *testing.T) {
 	fix := setupFixture(t)
 	defer fix.tearDown()
 
@@ -144,7 +144,40 @@ func TestHandler_RegisterNewStore(t *testing.T) {
 	}
 }
 
-func TestHandler_StoreByID(t *testing.T) { // nolint:dupl
+func TestHandler_Stores(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	strs := modelfixture.Stores(3)
+	fix.appService.On("RetrieveStores").Return(strs, nil)
+
+	res := httpGet(fix.handler, "/stores")
+	if got, want := res.StatusCode, nethttp.StatusOK; got != want {
+		t.Fatalf("StatusCode got: %d, want: %d", got, want)
+	}
+
+	var out []storePayload
+	if err := json.NewDecoder(res.Body).Decode(&out); err != nil {
+		t.Fatal("err:", err)
+	}
+
+	if got, want := len(out), len(strs); got != want {
+		t.Fatalf("Length got: %d, want: %d", got, want)
+	}
+
+	for i, str := range strs {
+		row := out[i]
+		if got, want := row.ID, str.ID(); got != want {
+			t.Errorf("ID got: %q. want: %q, index: %d", got, want, i)
+		}
+
+		if got, want := row.Name, str.Name(); got != want {
+			t.Errorf("Name got: %q. want: %q, index: %d", got, want, i)
+		}
+	}
+}
+
+func TestHandler_StoreByID(t *testing.T) {
 	fix := setupFixture(t)
 	defer fix.tearDown()
 

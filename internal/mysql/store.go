@@ -51,3 +51,31 @@ func (r *StoreRepository) StoreByID(id string) (*store.Store, error) {
 
 	return store.New(id, name)
 }
+
+// Stores retrieves stores.
+func (r *StoreRepository) Stores() ([]*store.Store, error) {
+	rows, err := r.db.Query("SELECT id, name FROM stores")
+	if err != nil {
+		return nil, err
+	}
+
+	var out []*store.Store
+	for rows.Next() {
+		var (
+			id   string
+			name string
+		)
+		if err := rows.Scan(&id, &name); err != nil {
+			return nil, err
+		}
+
+		str, err := store.New(id, name)
+		if err != nil {
+			return nil, err
+		}
+
+		out = append(out, str)
+	}
+
+	return out, nil
+}

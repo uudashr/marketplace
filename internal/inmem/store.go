@@ -44,3 +44,15 @@ func (r *StoreRepository) StoreByID(id string) (*store.Store, error) {
 
 	return &str, nil
 }
+
+// Stores retrieve stores.
+func (r *StoreRepository) Stores() ([]*store.Store, error) {
+	strs := make([]*store.Store, len(r.m))
+	i := 0
+	for _, v := range r.m {
+		str := v
+		strs[i] = &str
+		i++
+	}
+	return strs, nil
+}

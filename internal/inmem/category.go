@@ -47,8 +47,8 @@ func (r *CategoryRepository) CategoryByID(id string) (*product.Category, error) 
 
 // Categories retrieves product categories.
 func (r *CategoryRepository) Categories() ([]*product.Category, error) {
-	i := 0
 	cats := make([]*product.Category, len(r.m))
+	i := 0
 	for _, v := range r.m {
 		cat := v
 		cats[i] = &cat

@@ -77,6 +77,11 @@ func (svc *Service) RegisterNewStore(cmd RegisterNewStoreCommand) (*store.Store,
 	return str, nil
 }
 
+// RetrieveStores retrieves stores.
+func (svc *Service) RetrieveStores() ([]*store.Store, error) {
+	return svc.storeRepo.Stores()
+}
+
 // RetrieveStoreByID retrieves store by id.
 func (svc *Service) RetrieveStoreByID(cmd RetrieveStoreByIDCommand) (*store.Store, error) {
 	return svc.storeRepo.StoreByID(cmd.ID)

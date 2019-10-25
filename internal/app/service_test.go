@@ -110,6 +110,23 @@ func TestRetrieveStoreByID(t *testing.T) {
 	}
 }
 
+func TestRetrieveStores(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	strs := modelfixture.Stores(2)
+
+	fix.storeRepo.On("Stores").Return(strs, nil)
+	retStrs, err := fix.service.RetrieveStores()
+	if err != nil {
+		t.Fatal("err:", err)
+	}
+
+	if got, want := retStrs, strs; !reflect.DeepEqual(got, want) {
+		t.Errorf("got: %v, want: %v", got, want)
+	}
+}
+
 func TestOfferNewProduct(t *testing.T) {
 	fix := setupFixture(t)
 	defer fix.tearDown()

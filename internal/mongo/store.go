@@ -48,6 +48,35 @@ func (r *StoreRepository) StoreByID(id string) (*store.Store, error) {
 	return doc.build()
 }
 
+// Stores retrieves stores.
+func (r *StoreRepository) Stores() ([]*store.Store, error) {
+	cur, err := r.db.Collection("stores").Find(context.TODO(), bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		_ = cur.Close(context.TODO())
+	}()
+
+	var out []*store.Store
+	for cur.Next(context.TODO()) {
+		var doc storeDoc
+		if err := cur.Decode(&doc); err != nil {
+			return nil, err
+		}
+
+		cat, err := doc.build()
+		if err != nil {
+			return nil, err
+		}
+
+		out = append(out, cat)
+
+	}
+
+	return out, nil
+}
+
 type storeDoc struct {
 	ID   string `bson:"_id"`
 	Name string `bson:"name"`

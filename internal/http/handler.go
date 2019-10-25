@@ -22,8 +22,11 @@ type AppService interface {
 	RegisterNewCategory(app.RegisterNewCategoryCommand) (*product.Category, error)
 	RetrieveCategories() ([]*product.Category, error)
 	RetrieveCategoryByID(app.RetrieveCategoryByIDCommand) (*product.Category, error)
+
 	RegisterNewStore(app.RegisterNewStoreCommand) (*store.Store, error)
+	RetrieveStores() ([]*store.Store, error)
 	RetrieveStoreByID(app.RetrieveStoreByIDCommand) (*store.Store, error)
+
 	OfferNewProduct(app.OfferNewProductCommand) (*product.Product, error)
 	RetrieveProductByID(app.RetrieveProductByIDCommand) (*product.Product, error)
 }
@@ -56,10 +59,10 @@ func (d *delegate) retrieveCategories(c echo.Context) error {
 	}
 
 	out := make([]categoryPayload, len(cats))
-	for i, c := range cats {
+	for i, v := range cats {
 		out[i] = categoryPayload{
-			ID:   c.ID(),
-			Name: c.Name(),
+			ID:   v.ID(),
+			Name: v.Name(),
 		}
 	}
 	return c.JSON(http.StatusOK, out)
@@ -99,6 +102,22 @@ func (d *delegate) registerNewStore(c echo.Context) error {
 
 	c.Response().Header().Add("Location", fmt.Sprintf("/stores/%s", str.ID()))
 	return c.NoContent(http.StatusCreated)
+}
+
+func (d *delegate) retrieveStores(c echo.Context) error {
+	strs, err := d.appService.RetrieveStores()
+	if err != nil {
+		return err
+	}
+
+	out := make([]storePayload, len(strs))
+	for i, v := range strs {
+		out[i] = storePayload{
+			ID:   v.ID(),
+			Name: v.Name(),
+		}
+	}
+	return c.JSON(http.StatusOK, out)
 }
 
 func (d *delegate) retrieveStoreByID(c echo.Context) error {
@@ -189,6 +208,7 @@ func NewHandler(appService AppService) (http.Handler, error) {
 	e.GET("/categories/:id", d.retrieveCategoryByID)
 
 	e.POST("/stores", d.registerNewStore)
+	e.GET("/stores", d.retrieveStores)
 	e.GET("/stores/:id", d.retrieveStoreByID)
 
 	e.POST("/stores/:id/products", d.offerNewProduct)

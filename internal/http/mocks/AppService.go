@@ -173,3 +173,26 @@ func (_m *AppService) RetrieveStoreByID(_a0 app.RetrieveStoreByIDCommand) (*stor
 
 	return r0, r1
 }
+
+// RetrieveStores provides a mock function with given fields:
+func (_m *AppService) RetrieveStores() ([]*store.Store, error) {
+	ret := _m.Called()
+
+	var r0 []*store.Store
+	if rf, ok := ret.Get(0).(func() []*store.Store); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*store.Store)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
