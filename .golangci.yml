@@ -2,6 +2,7 @@ linters:
   enable:
     - golint
     - gocyclo
+    - gocognit
     - goconst
     - unconvert
     - goimports
