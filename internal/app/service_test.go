@@ -164,6 +164,26 @@ func TestOfferNewProduct(t *testing.T) {
 	}
 }
 
+func TestRetrieveProductByID(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	str := modelfixture.Store()
+	prd := modelfixture.ProductOfStore(str)
+	fix.productRepo.On("ProductByID", prd.ID()).Return(prd, nil)
+
+	retPrd, err := fix.service.RetrieveProductByID(app.RetrieveProductByIDCommand{
+		ID: prd.ID(),
+	})
+	if err != nil {
+		t.Fatal("err:", err)
+	}
+
+	if got, want := retPrd, prd; got != want {
+		t.Errorf("got: %v, want: %v", got, want)
+	}
+}
+
 type testFixture struct {
 	t            *testing.T
 	categoryRepo *prdmocks.CategoryRepository

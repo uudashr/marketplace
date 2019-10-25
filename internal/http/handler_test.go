@@ -219,6 +219,55 @@ func TestHandler_OfferNewProduct(t *testing.T) {
 	}
 }
 
+func TestHandler_ProductByID(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	str := modelfixture.Store()
+	prd := modelfixture.ProductOfStore(str)
+	fix.appService.On("RetrieveProductByID", app.RetrieveProductByIDCommand{
+		ID: prd.ID(),
+	}).Return(prd, nil)
+
+	res := httpGet(fix.handler, fmt.Sprintf("/products/%s", prd.ID()))
+	if got, want := res.StatusCode, nethttp.StatusOK; got != want {
+		t.Fatalf("StatusCode got: %d, want: %d", got, want)
+	}
+
+	var out productPayload
+	if err := json.NewDecoder(res.Body).Decode(&out); err != nil {
+		t.Fatal("err:", err)
+	}
+
+	if got, want := out.ID, prd.ID(); got != want {
+		t.Errorf("ID got: %q. want: %q", got, want)
+	}
+
+	if got, want := out.StoreID, prd.StoreID(); got != want {
+		t.Errorf("StoreID got: %q. want: %q", got, want)
+	}
+
+	if got, want := out.CategoryID, prd.CategoryID(); got != want {
+		t.Errorf("CategoryID got: %q. want: %q", got, want)
+	}
+
+	if got, want := out.Name, prd.Name(); got != want {
+		t.Errorf("Name got: %q. want: %q", got, want)
+	}
+
+	if got, want := out.Price, prd.Price().String(); got != want {
+		t.Errorf("Price got: %q. want: %q", got, want)
+	}
+
+	if got, want := out.Description, prd.Description(); got != want {
+		t.Errorf("Description got: %q. want: %q", got, want)
+	}
+
+	if got, want := out.Quantity, prd.Quantity(); got != want {
+		t.Errorf("Quantity got: %d. want: %d", got, want)
+	}
+}
+
 type categoryPayload struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
@@ -227,6 +276,16 @@ type categoryPayload struct {
 type storePayload struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
+}
+
+type productPayload struct {
+	ID          string `json:"id"`
+	StoreID     string `json:"storeId"`
+	CategoryID  string `json:"categoryId"`
+	Name        string `json:"name"`
+	Price       string `json:"price"`
+	Description string `json:"description"`
+	Quantity    int    `json:"quantity"`
 }
 
 type testFixture struct {

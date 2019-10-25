@@ -77,6 +77,11 @@ func (svc *Service) RegisterNewStore(cmd RegisterNewStoreCommand) (*store.Store,
 	return str, nil
 }
 
+// RetrieveStoreByID retrieves store by id.
+func (svc *Service) RetrieveStoreByID(cmd RetrieveStoreByIDCommand) (*store.Store, error) {
+	return svc.storeRepo.StoreByID(cmd.ID)
+}
+
 // OfferNewProduct offers new product.
 func (svc *Service) OfferNewProduct(cmd OfferNewProductCommand) (*product.Product, error) {
 	str, err := svc.storeRepo.StoreByID(cmd.StoreID)
@@ -110,6 +115,11 @@ func (svc *Service) OfferNewProduct(cmd OfferNewProductCommand) (*product.Produc
 	return prd, nil
 }
 
+// RetrieveProductByID retrieves product by id.
+func (svc *Service) RetrieveProductByID(cmd RetrieveProductByIDCommand) (*product.Product, error) {
+	return svc.productRepo.ProductByID(cmd.ID)
+}
+
 // RegisterNewCategoryCommand command for registering new category.
 type RegisterNewCategoryCommand struct {
 	Name string
@@ -125,6 +135,11 @@ type RegisterNewStoreCommand struct {
 	Name string
 }
 
+// RetrieveStoreByIDCOmmand command for retrieving store by ID.
+type RetrieveStoreByIDCommand struct {
+	ID string
+}
+
 // OfferNewProductCommand command for offering new product.
 type OfferNewProductCommand struct {
 	StoreID     string
@@ -133,4 +148,9 @@ type OfferNewProductCommand struct {
 	Price       decimal.Decimal
 	Description string
 	Quantity    int
+}
+
+// RetrieveProductByIDCommand command for retrieving product by ID.
+type RetrieveProductByIDCommand struct {
+	ID string
 }

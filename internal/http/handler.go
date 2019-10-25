@@ -25,6 +25,7 @@ type AppService interface {
 	RegisterNewStore(app.RegisterNewStoreCommand) (*store.Store, error)
 	RetrieveStoreByID(app.RetrieveStoreByIDCommand) (*store.Store, error)
 	OfferNewProduct(app.OfferNewProductCommand) (*product.Product, error)
+	RetrieveProductByID(app.RetrieveProductByIDCommand) (*product.Product, error)
 }
 
 type delegate struct {
@@ -144,6 +145,30 @@ func (d *delegate) offerNewProduct(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
+func (d *delegate) retrieveProductByID(c echo.Context) error {
+	paramID := c.Param("id")
+	prd, err := d.appService.RetrieveProductByID(app.RetrieveProductByIDCommand{
+		ID: paramID,
+	})
+	if err != nil {
+		return err
+	}
+
+	if prd == nil {
+		return echo.ErrNotFound
+	}
+
+	return c.JSON(http.StatusOK, productPayload{
+		ID:          prd.ID(),
+		StoreID:     prd.StoreID(),
+		CategoryID:  prd.CategoryID(),
+		Name:        prd.Name(),
+		Price:       prd.Price(),
+		Description: prd.Description(),
+		Quantity:    prd.Quantity(),
+	})
+}
+
 func (d *delegate) checkHealthz(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
@@ -167,6 +192,7 @@ func NewHandler(appService AppService) (http.Handler, error) {
 	e.GET("/stores/:id", d.retrieveStoreByID)
 
 	e.POST("/stores/:id/products", d.offerNewProduct)
+	e.GET("/products/:id", d.retrieveProductByID)
 
 	e.GET("/healthz", d.checkHealthz)
 
@@ -192,6 +218,16 @@ type storePayload struct {
 }
 
 type offerNewProductPayload struct {
+	CategoryID  string          `json:"categoryId"`
+	Name        string          `json:"name"`
+	Price       decimal.Decimal `json:"price"`
+	Description string          `json:"description"`
+	Quantity    int             `json:"quantity"`
+}
+
+type productPayload struct {
+	ID          string          `json:"id"`
+	StoreID     string          `json:"storeId"`
 	CategoryID  string          `json:"categoryId"`
 	Name        string          `json:"name"`
 	Price       decimal.Decimal `json:"price"`

@@ -128,6 +128,29 @@ func (_m *AppService) RetrieveCategoryByID(_a0 app.RetrieveCategoryByIDCommand) 
 	return r0, r1
 }
 
+// RetrieveProductByID provides a mock function with given fields: _a0
+func (_m *AppService) RetrieveProductByID(_a0 app.RetrieveProductByIDCommand) (*product.Product, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *product.Product
+	if rf, ok := ret.Get(0).(func(app.RetrieveProductByIDCommand) *product.Product); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*product.Product)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(app.RetrieveProductByIDCommand) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // RetrieveStoreByID provides a mock function with given fields: _a0
 func (_m *AppService) RetrieveStoreByID(_a0 app.RetrieveStoreByIDCommand) (*store.Store, error) {
 	ret := _m.Called(_a0)
