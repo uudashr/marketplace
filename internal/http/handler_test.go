@@ -144,6 +144,49 @@ func TestHandler_RegisterNewStore(t *testing.T) {
 	}
 }
 
+func TestHandler_StoreByID(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	str := modelfixture.Store()
+	fix.appService.On("RetrieveStoreByID", app.RetrieveStoreByIDCommand{
+		ID: str.ID(),
+	}).Return(str, nil)
+
+	res := httpGet(fix.handler, fmt.Sprintf("/stores/%s", str.ID()))
+	if got, want := res.StatusCode, nethttp.StatusOK; got != want {
+		t.Fatalf("StatusCode got: %d, want: %d", got, want)
+	}
+
+	var out storePayload
+	if err := json.NewDecoder(res.Body).Decode(&out); err != nil {
+		t.Fatal("err:", err)
+	}
+
+	if got, want := out.ID, str.ID(); got != want {
+		t.Errorf("ID got: %q. want: %q", got, want)
+	}
+
+	if got, want := out.Name, str.Name(); got != want {
+		t.Errorf("Name got: %q. want: %q", got, want)
+	}
+}
+
+func TestHandler_StoreByID_notFound(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	str := modelfixture.Store()
+	fix.appService.On("RetrieveStoreByID", app.RetrieveStoreByIDCommand{
+		ID: str.ID(),
+	}).Return(nil, nil)
+
+	res := httpGet(fix.handler, fmt.Sprintf("/stores/%s", str.ID()))
+	if got, want := res.StatusCode, nethttp.StatusNotFound; got != want {
+		t.Fatalf("StatusCode got: %d, want: %d", got, want)
+	}
+}
+
 func TestHandler_OfferNewProduct(t *testing.T) {
 	fix := setupFixture(t)
 	defer fix.tearDown()
@@ -177,6 +220,11 @@ func TestHandler_OfferNewProduct(t *testing.T) {
 }
 
 type categoryPayload struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type storePayload struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }

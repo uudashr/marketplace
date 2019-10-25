@@ -23,6 +23,7 @@ type AppService interface {
 	RetrieveCategories() ([]*product.Category, error)
 	RetrieveCategoryByID(app.RetrieveCategoryByIDCommand) (*product.Category, error)
 	RegisterNewStore(app.RegisterNewStoreCommand) (*store.Store, error)
+	RetrieveStoreByID(app.RetrieveStoreByIDCommand) (*store.Store, error)
 	OfferNewProduct(app.OfferNewProductCommand) (*product.Product, error)
 }
 
@@ -99,6 +100,25 @@ func (d *delegate) registerNewStore(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
+func (d *delegate) retrieveStoreByID(c echo.Context) error {
+	paramID := c.Param("id")
+	str, err := d.appService.RetrieveStoreByID(app.RetrieveStoreByIDCommand{
+		ID: paramID,
+	})
+	if err != nil {
+		return err
+	}
+
+	if str == nil {
+		return echo.ErrNotFound
+	}
+
+	return c.JSON(http.StatusOK, storePayload{
+		ID:   str.ID(),
+		Name: str.Name(),
+	})
+}
+
 func (d *delegate) offerNewProduct(c echo.Context) error {
 	paramID := c.Param("id")
 
@@ -144,6 +164,7 @@ func NewHandler(appService AppService) (http.Handler, error) {
 	e.GET("/categories/:id", d.retrieveCategoryByID)
 
 	e.POST("/stores", d.registerNewStore)
+	e.GET("/stores/:id", d.retrieveStoreByID)
 
 	e.POST("/stores/:id/products", d.offerNewProduct)
 
@@ -162,6 +183,11 @@ type categoryPayload struct {
 }
 
 type registerNewStorePayload struct {
+	Name string `json:"name"`
+}
+
+type storePayload struct {
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 

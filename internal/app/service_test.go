@@ -91,6 +91,25 @@ func TestRegisterNewStore(t *testing.T) {
 	}
 }
 
+func TestRetrieveStoreByID(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	str := modelfixture.Store()
+	fix.storeRepo.On("StoreByID", str.ID()).Return(str, nil)
+
+	retStr, err := fix.service.RetrieveStoreByID(app.RetrieveStoreByIDCommand{
+		ID: str.ID(),
+	})
+	if err != nil {
+		t.Fatal("err:", err)
+	}
+
+	if got, want := retStr, str; got != want {
+		t.Errorf("got: %v, want: %v", got, want)
+	}
+}
+
 func TestOfferNewProduct(t *testing.T) {
 	fix := setupFixture(t)
 	defer fix.tearDown()
