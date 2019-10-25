@@ -3,6 +3,8 @@ package app
 import (
 	"errors"
 
+	"github.com/shopspring/decimal"
+
 	"github.com/uudashr/marketplace/internal/store"
 
 	"github.com/uudashr/marketplace/internal/product"
@@ -12,10 +14,11 @@ import (
 type Service struct {
 	categoryRepo product.CategoryRepository
 	storeRepo    store.Repository
+	productRepo  product.Repository
 }
 
 // NewService constructs new service.
-func NewService(categoryRepo product.CategoryRepository, storeRepo store.Repository) (*Service, error) {
+func NewService(categoryRepo product.CategoryRepository, storeRepo store.Repository, productRepo product.Repository) (*Service, error) {
 	if categoryRepo == nil {
 		return nil, errors.New("nil categoryRepo")
 	}
@@ -24,9 +27,14 @@ func NewService(categoryRepo product.CategoryRepository, storeRepo store.Reposit
 		return nil, errors.New("nil storeRepo")
 	}
 
+	if productRepo == nil {
+		return nil, errors.New("nil productRepo")
+	}
+
 	return &Service{
 		categoryRepo: categoryRepo,
 		storeRepo:    storeRepo,
+		productRepo:  productRepo,
 	}, nil
 }
 
@@ -69,6 +77,39 @@ func (svc *Service) RegisterNewStore(cmd RegisterNewStoreCommand) (*store.Store,
 	return str, nil
 }
 
+// OfferNewProduct offers new product.
+func (svc *Service) OfferNewProduct(cmd OfferNewProductCommand) (*product.Product, error) {
+	str, err := svc.storeRepo.StoreByID(cmd.StoreID)
+	if err != nil {
+		return nil, err
+	}
+
+	if str == nil {
+		return nil, errors.New("store not found")
+	}
+
+	cat, err := svc.categoryRepo.CategoryByID(cmd.CategoryID)
+	if err != nil {
+		return nil, err
+	}
+
+	if cat == nil {
+		return nil, errors.New("category not found")
+	}
+
+	prd, err := str.OfferProduct(product.NextID(), cat, cmd.Name, cmd.Price, cmd.Description, cmd.Quantity)
+	if err != nil {
+		return nil, err
+	}
+
+	err = svc.productRepo.Store(prd)
+	if err != nil {
+		return nil, err
+	}
+
+	return prd, nil
+}
+
 // RegisterNewCategoryCommand command for registering new category.
 type RegisterNewCategoryCommand struct {
 	Name string
@@ -82,4 +123,14 @@ type RetrieveCategoryByIDCommand struct {
 // RegisterNewStoreCommand command for registering new store.
 type RegisterNewStoreCommand struct {
 	Name string
+}
+
+// OfferNewProductCommand command for offering new product.
+type OfferNewProductCommand struct {
+	StoreID     string
+	CategoryID  string
+	Name        string
+	Price       decimal.Decimal
+	Description string
+	Quantity    int
 }

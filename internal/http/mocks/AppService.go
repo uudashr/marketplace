@@ -13,6 +13,29 @@ type AppService struct {
 	mock.Mock
 }
 
+// OfferNewProduct provides a mock function with given fields: _a0
+func (_m *AppService) OfferNewProduct(_a0 app.OfferNewProductCommand) (*product.Product, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *product.Product
+	if rf, ok := ret.Get(0).(func(app.OfferNewProductCommand) *product.Product); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*product.Product)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(app.OfferNewProductCommand) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // RegisterNewCategory provides a mock function with given fields: _a0
 func (_m *AppService) RegisterNewCategory(_a0 app.RegisterNewCategoryCommand) (*product.Category, error) {
 	ret := _m.Called(_a0)

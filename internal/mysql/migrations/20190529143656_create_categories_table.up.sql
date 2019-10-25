@@ -5,5 +5,5 @@ CREATE TABLE categories (
     updated_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP 
         ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(id), 
-    UNIQUE KEY uq_name (name)
+    UNIQUE KEY ux_name (name)
 ) ENGINE=InnoDB;

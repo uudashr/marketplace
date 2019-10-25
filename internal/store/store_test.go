@@ -59,9 +59,14 @@ func TestStore(t *testing.T) {
 }
 
 func TestOfferProduct(t *testing.T) {
+	cat, err := product.NewCategory(product.NextCategoryID(), "Food")
+	if err != nil {
+		panic(err)
+	}
+
 	cases := map[string]struct {
 		id          string
-		categoryID  string
+		category    *product.Category
 		name        string
 		price       decimal.Decimal
 		quantity    int
@@ -70,27 +75,36 @@ func TestOfferProduct(t *testing.T) {
 	}{
 		"Default": {
 			id:          product.NextID(),
-			categoryID:  product.NextCategoryID(),
+			category:    cat,
 			name:        "Mineral Water",
-			price:       decimal.NewFromFloat(2500.1),
 			quantity:    100,
+			price:       decimal.NewFromFloat(2500.1),
 			description: "Some value",
 		},
 		"Zero quantity": {
 			id:          product.NextID(),
-			categoryID:  product.NextCategoryID(),
+			category:    cat,
 			name:        "Mineral Water",
 			price:       decimal.NewFromFloat(2500.1),
-			quantity:    0,
 			description: "Some value",
+			quantity:    0,
 			expectErr:   true,
 		},
 		"Negative quantity": {
 			id:          product.NextID(),
-			categoryID:  product.NextCategoryID(),
+			category:    cat,
 			name:        "Mineral Water",
 			price:       decimal.NewFromFloat(2500.1),
+			description: "Some value",
 			quantity:    -1,
+			expectErr:   true,
+		},
+		"Nil category": {
+			id:          product.NextID(),
+			category:    nil,
+			name:        "Mineral Water",
+			quantity:    100,
+			price:       decimal.NewFromFloat(2500.1),
 			description: "Some value",
 			expectErr:   true,
 		},
@@ -103,7 +117,7 @@ func TestOfferProduct(t *testing.T) {
 
 	for name, c := range cases {
 		t.Run(name, func(t *testing.T) {
-			p, err := s.OfferProduct(c.id, c.categoryID, c.name, c.price, c.quantity, c.description)
+			p, err := s.OfferProduct(c.id, c.category, c.name, c.price, c.description, c.quantity)
 			if c.expectErr {
 				if err == nil {
 					t.Fatal("Expect err")
@@ -123,7 +137,7 @@ func TestOfferProduct(t *testing.T) {
 				t.Errorf("StoreID got: %q, want: %q", got, want)
 			}
 
-			if got, want := p.CategoryID(), c.categoryID; got != want {
+			if got, want := p.CategoryID(), c.category.ID(); got != want {
 				t.Errorf("CategoryID got: %q, want: %q", got, want)
 			}
 
@@ -135,12 +149,12 @@ func TestOfferProduct(t *testing.T) {
 				t.Errorf("Price got: %q, want: %q", got, want)
 			}
 
-			if got, want := p.Quantity(), c.quantity; got != want {
-				t.Errorf("Quantity got: %d, want: %d", got, want)
-			}
-
 			if got, want := p.Description(), c.description; got != want {
 				t.Errorf("Description got: %q, want: %q", got, want)
+			}
+
+			if got, want := p.Quantity(), c.quantity; got != want {
+				t.Errorf("Quantity got: %d, want: %d", got, want)
 			}
 		})
 	}

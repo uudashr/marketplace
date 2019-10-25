@@ -14,12 +14,12 @@ type Product struct {
 	categoryID  string
 	name        string
 	price       decimal.Decimal
-	quantity    int
 	description string
+	quantity    int
 }
 
 // New constructs new store product instance.
-func New(id, storeID, categoryID, name string, price decimal.Decimal, quantity int, description string) (*Product, error) {
+func New(id, storeID, categoryID, name string, price decimal.Decimal, description string, quantity int) (*Product, error) {
 	if id == "" {
 		return nil, errors.New("empty id")
 	}
@@ -46,8 +46,8 @@ func New(id, storeID, categoryID, name string, price decimal.Decimal, quantity i
 		categoryID:  categoryID,
 		name:        name,
 		price:       price,
-		quantity:    quantity,
 		description: description,
+		quantity:    quantity,
 	}, nil
 }
 
@@ -76,14 +76,14 @@ func (p Product) Price() decimal.Decimal {
 	return p.price
 }
 
-// Quantity of the product.
-func (p Product) Quantity() int {
-	return p.quantity
-}
-
 // Description of the product.
 func (p Product) Description() string {
 	return p.description
+}
+
+// Quantity of the product.
+func (p Product) Quantity() int {
+	return p.quantity
 }
 
 // NextID returns unique id for the product.
@@ -92,7 +92,8 @@ func NextID() string {
 }
 
 // Repository is repository for the product.
+//go:generate mockery -name=Repository
 type Repository interface {
 	Store(*Product) error
-	ProductsByStoreID(storeID string) ([]*Product, error)
+	ProductByID(id string) (*Product, error)
 }

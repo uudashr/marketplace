@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/shopspring/decimal"
+
 	storemocks "github.com/uudashr/marketplace/internal/store/mocks"
 
 	modelfixture "github.com/uudashr/marketplace/internal/fixture"
@@ -12,7 +14,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/uudashr/marketplace/internal/app"
-	prodmocks "github.com/uudashr/marketplace/internal/product/mocks"
+	prdmocks "github.com/uudashr/marketplace/internal/product/mocks"
 )
 
 func TestRegisterNewCategory(t *testing.T) {
@@ -23,7 +25,7 @@ func TestRegisterNewCategory(t *testing.T) {
 		Name: "Electronic",
 	}
 
-	fix.catRepo.On("Store", mock.Anything).Return(nil)
+	fix.categoryRepo.On("Store", mock.Anything).Return(nil)
 	cat, err := fix.service.RegisterNewCategory(cmd)
 	if err != nil {
 		t.Fatal("err:", err)
@@ -40,7 +42,7 @@ func TestRetrieveCategories(t *testing.T) {
 
 	cats := modelfixture.Categories(2)
 
-	fix.catRepo.On("Categories").Return(cats, nil)
+	fix.categoryRepo.On("Categories").Return(cats, nil)
 	retCats, err := fix.service.RetrieveCategories()
 	if err != nil {
 		t.Fatal("err:", err)
@@ -56,7 +58,7 @@ func TestRetrieveCategoryByID(t *testing.T) {
 	defer fix.tearDown()
 
 	cat := modelfixture.Category()
-	fix.catRepo.On("CategoryByID", cat.ID()).Return(cat, nil)
+	fix.categoryRepo.On("CategoryByID", cat.ID()).Return(cat, nil)
 
 	retCat, err := fix.service.RetrieveCategoryByID(app.RetrieveCategoryByIDCommand{
 		ID: cat.ID(),
@@ -89,30 +91,87 @@ func TestRegisterNewStore(t *testing.T) {
 	}
 }
 
+func TestOfferNewProduct(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	str := modelfixture.Store()
+	cat := modelfixture.Category()
+
+	cmd := app.OfferNewProductCommand{
+		StoreID:     str.ID(),
+		CategoryID:  cat.ID(),
+		Name:        "Sony Wf 1000MX3",
+		Price:       decimal.NewFromFloat(3499000),
+		Description: "Trully Wireless Earbud with Noise Cancelling",
+		Quantity:    10,
+	}
+
+	fix.storeRepo.On("StoreByID", cmd.StoreID).Return(str, nil)
+	fix.categoryRepo.On("CategoryByID", cmd.CategoryID).Return(cat, nil)
+	fix.productRepo.On("Store", mock.Anything).Return(nil)
+
+	prd, err := fix.service.OfferNewProduct(cmd)
+	if err != nil {
+		t.Fatal("err:", err)
+	}
+
+	if got := prd.ID(); got == "" {
+		t.Errorf("ID got: %q, want not empty", got)
+	}
+
+	if got, want := prd.StoreID(), cmd.StoreID; got != want {
+		t.Errorf("StoreID got: %q, want: %q", got, want)
+	}
+
+	if got, want := prd.CategoryID(), cmd.CategoryID; got != want {
+		t.Errorf("CategoryID got: %q, want: %q", got, want)
+	}
+
+	if got, want := prd.Name(), cmd.Name; got != want {
+		t.Errorf("Name got: %q, want: %q", got, want)
+	}
+
+	if got, want := prd.Price(), cmd.Price; !got.Equal(want) {
+		t.Errorf("Price got: %q, want: %q", got, want)
+	}
+
+	if got, want := prd.Description(), cmd.Description; got != want {
+		t.Errorf("Description got: %q, want: %q", got, want)
+	}
+
+	if got, want := prd.Quantity(), cmd.Quantity; got != want {
+		t.Errorf("Name got: %d, want: %d", got, want)
+	}
+}
+
 type testFixture struct {
-	t         *testing.T
-	catRepo   *prodmocks.CategoryRepository
-	storeRepo *storemocks.Repository
-	service   *app.Service
+	t            *testing.T
+	categoryRepo *prdmocks.CategoryRepository
+	storeRepo    *storemocks.Repository
+	productRepo  *prdmocks.Repository
+	service      *app.Service
 }
 
 func setupFixture(t *testing.T) *testFixture {
-	catRepo := new(prodmocks.CategoryRepository)
+	categoryRepo := new(prdmocks.CategoryRepository)
 	storeRepo := new(storemocks.Repository)
-	svc, err := app.NewService(catRepo, storeRepo)
+	productRepo := new(prdmocks.Repository)
+	svc, err := app.NewService(categoryRepo, storeRepo, productRepo)
 	if err != nil {
 		t.Fatal(fmt.Errorf("fail to create Service: %w", err))
 	}
 
 	return &testFixture{
-		t:         t,
-		catRepo:   catRepo,
-		storeRepo: storeRepo,
-		service:   svc,
+		t:            t,
+		categoryRepo: categoryRepo,
+		storeRepo:    storeRepo,
+		productRepo:  productRepo,
+		service:      svc,
 	}
 }
 
 func (fix *testFixture) tearDown() {
 	mock.AssertExpectationsForObjects(fix.t,
-		fix.catRepo)
+		fix.categoryRepo, fix.storeRepo, fix.productRepo)
 }

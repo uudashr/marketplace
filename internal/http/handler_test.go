@@ -144,6 +144,38 @@ func TestHandler_RegisterNewStore(t *testing.T) {
 	}
 }
 
+func TestHandler_OfferNewProduct(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	str := modelfixture.Store()
+	prd := modelfixture.ProductOfStore(str)
+
+	fix.appService.On("OfferNewProduct", app.OfferNewProductCommand{
+		StoreID:     prd.StoreID(),
+		CategoryID:  prd.CategoryID(),
+		Name:        prd.Name(),
+		Price:       prd.Price(),
+		Description: prd.Description(),
+		Quantity:    prd.Quantity(),
+	}).Return(prd, nil)
+
+	resp := httpPost(fix.handler, fmt.Sprintf("/stores/%s/products", str.ID()), map[string]interface{}{
+		"categoryId":  prd.CategoryID(),
+		"name":        prd.Name(),
+		"price":       prd.Price().String(),
+		"description": prd.Description(),
+		"quantity":    prd.Quantity(),
+	})
+	if got, want := resp.StatusCode, nethttp.StatusCreated; got != want {
+		t.Fatalf("StatusCode got: %d, want: %d", got, want)
+	}
+
+	if got, want := resp.Header.Get("Location"), fmt.Sprintf("/products/%s", prd.ID()); got != want {
+		t.Errorf("Location got: %q, want: %q", got, want)
+	}
+}
+
 type categoryPayload struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`

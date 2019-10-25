@@ -16,9 +16,9 @@ func init() {
 		keys := bson.M{"name": 1}
 		model := mongo.IndexModel{Keys: keys, Options: opts}
 
-		_, err := db.Collection("categories").Indexes().CreateOne(context.TODO(), model)
+		_, err := db.Collection("stores").Indexes().CreateOne(context.TODO(), model)
 		return err
 	}, func(db *mongo.Database) error {
-		return db.Collection("categories").Drop(context.TODO())
+		return db.Collection("stores").Drop(context.TODO())
 	})
 }

@@ -26,8 +26,8 @@ func TestProduct(t *testing.T) {
 			categoryID:  product.NextCategoryID(),
 			name:        "Mineral Water",
 			price:       decimal.NewFromFloat(2500.1),
-			quantity:    100,
 			description: "Some value",
+			quantity:    100,
 		},
 		"Zero quantity": {
 			id:          product.NextID(),
@@ -35,8 +35,8 @@ func TestProduct(t *testing.T) {
 			categoryID:  product.NextCategoryID(),
 			name:        "Mineral Water",
 			price:       decimal.NewFromFloat(2500.1),
-			quantity:    0,
 			description: "Some value",
+			quantity:    0,
 		},
 		"Empty description": {
 			id:          product.NextID(),
@@ -44,8 +44,8 @@ func TestProduct(t *testing.T) {
 			categoryID:  product.NextCategoryID(),
 			name:        "Mineral Water",
 			price:       decimal.NewFromFloat(2500.1),
-			quantity:    100,
 			description: "",
+			quantity:    100,
 		},
 		"Empty name": {
 			id:          product.NextID(),
@@ -53,8 +53,8 @@ func TestProduct(t *testing.T) {
 			categoryID:  product.NextCategoryID(),
 			name:        "",
 			price:       decimal.NewFromFloat(2500.1),
-			quantity:    100,
 			description: "Some value",
+			quantity:    100,
 			expectErr:   true,
 		},
 		"Negative price": {
@@ -63,8 +63,8 @@ func TestProduct(t *testing.T) {
 			categoryID:  product.NextCategoryID(),
 			name:        "Mineral Water",
 			price:       decimal.NewFromFloat(-2500.1),
-			quantity:    100,
 			description: "Some value",
+			quantity:    100,
 			expectErr:   true,
 		},
 		"Negative quantity": {
@@ -73,15 +73,15 @@ func TestProduct(t *testing.T) {
 			categoryID:  product.NextCategoryID(),
 			name:        "Mineral Water",
 			price:       decimal.NewFromFloat(2500.1),
-			quantity:    -10,
 			description: "Some value",
+			quantity:    -10,
 			expectErr:   true,
 		},
 	}
 
 	for name, c := range cases {
 		t.Run(name, func(t *testing.T) {
-			p, err := product.New(c.id, c.storeID, c.categoryID, c.name, c.price, c.quantity, c.description)
+			p, err := product.New(c.id, c.storeID, c.categoryID, c.name, c.price, c.description, c.quantity)
 			if c.expectErr {
 				if err == nil {
 					t.Fatal("Expect err")

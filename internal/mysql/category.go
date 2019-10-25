@@ -27,12 +27,12 @@ func (r *CategoryRepository) Store(cat *product.Category) error {
 		return err
 	}
 
-	count, err := res.RowsAffected()
+	n, err := res.RowsAffected()
 	if err != nil {
 		return err
 	}
 
-	if count == 0 {
+	if n == 0 {
 		return errors.New("no rows affected")
 	}
 

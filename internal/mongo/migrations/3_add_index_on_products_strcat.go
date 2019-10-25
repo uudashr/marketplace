@@ -12,13 +12,13 @@ import (
 
 func init() {
 	migrate.MustRegister(func(db *mongo.Database) error {
-		opts := options.Index().SetName("uq_name").SetUnique(true)
-		keys := bson.M{"name": 1}
+		opts := options.Index().SetName("ix_strcat")
+		keys := bson.M{"storeId": 1, "categoryId": 1}
 		model := mongo.IndexModel{Keys: keys, Options: opts}
 
-		_, err := db.Collection("stores").Indexes().CreateOne(context.TODO(), model)
+		_, err := db.Collection("products").Indexes().CreateOne(context.TODO(), model)
 		return err
 	}, func(db *mongo.Database) error {
-		return db.Collection("stores").Drop(context.TODO())
+		return db.Collection("products").Drop(context.TODO())
 	})
 }

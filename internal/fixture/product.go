@@ -9,26 +9,29 @@ import (
 	"github.com/uudashr/marketplace/internal/store"
 )
 
+// ProductOfStore fixture of products of a store.
 func ProductOfStore(str *store.Store) *product.Product {
 	return ProductOfStoreWithOptions(str, ProductOptions{})
 }
 
+// ProductOfStoreWithOptions fixture of products of a store with specific options.
 func ProductOfStoreWithOptions(str *store.Store, opts ProductOptions) *product.Product {
-	prod, err := product.New(
+	prd, err := product.New(
 		product.NextID(),
 		str.ID(),
 		product.NextCategoryID(),
 		opts.nameOption(),
 		opts.priceOption(),
-		opts.quantityOption(),
-		opts.descriptionOption())
+		opts.descriptionOption(),
+		opts.quantityOption())
 	if err != nil {
 		panic(err)
 	}
 
-	return prod
+	return prd
 }
 
+// ProductOptions is product options.
 type ProductOptions struct {
 	Name string
 }
@@ -41,14 +44,14 @@ func (opts ProductOptions) nameOption() string {
 	return opts.Name
 }
 
+func (opts ProductOptions) priceOption() decimal.Decimal {
+	return decimal.NewFromFloat(float64(2500 + rand.Intn(297_501)))
+}
+
 func (opts ProductOptions) descriptionOption() string {
 	return fake.Paragraph()
 }
 
 func (opts ProductOptions) quantityOption() int {
 	return 100 + rand.Intn(201)
-}
-
-func (opts ProductOptions) priceOption() decimal.Decimal {
-	return decimal.NewFromFloat(float64(2500 + rand.Intn(297_501)))
 }
