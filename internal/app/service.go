@@ -120,6 +120,11 @@ func (svc *Service) OfferNewProduct(cmd OfferNewProductCommand) (*product.Produc
 	return prd, nil
 }
 
+// RetrieveProducts retrieves products.
+func (svc *Service) RetrieveProducts() ([]*product.Product, error) {
+	return svc.productRepo.Products()
+}
+
 // RetrieveProductByID retrieves product by id.
 func (svc *Service) RetrieveProductByID(cmd RetrieveProductByIDCommand) (*product.Product, error) {
 	return svc.productRepo.ProductByID(cmd.ID)
