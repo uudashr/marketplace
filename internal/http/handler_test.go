@@ -252,6 +252,59 @@ func TestHandler_OfferNewProduct(t *testing.T) {
 	}
 }
 
+func TestHandler_Products(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	prds := modelfixture.Products(3)
+	fix.appService.On("RetrieveProducts").Return(prds, nil)
+
+	res := httpGet(fix.handler, "/products")
+	if got, want := res.StatusCode, nethttp.StatusOK; got != want {
+		t.Fatalf("StatusCode got: %d, want: %d", got, want)
+	}
+
+	var out []productPayload
+	if err := json.NewDecoder(res.Body).Decode(&out); err != nil {
+		t.Fatal("err:", err)
+	}
+
+	if got, want := len(out), len(prds); got != want {
+		t.Fatalf("Length got: %d, want: %d", got, want)
+	}
+
+	for i, prd := range prds {
+		row := out[i]
+		if got, want := row.ID, prd.ID(); got != want {
+			t.Errorf("ID got: %q. want: %q, index: %d", got, want, i)
+		}
+
+		if got, want := row.StoreID, prd.StoreID(); got != want {
+			t.Errorf("StoreID got: %q, want: %q, index: %d", got, want, i)
+		}
+
+		if got, want := row.CategoryID, prd.CategoryID(); got != want {
+			t.Errorf("CategoryID got: %q. want: %q, index: %d", got, want, i)
+		}
+
+		if got, want := row.Name, prd.Name(); got != want {
+			t.Errorf("Name got: %q, want: %q, index: %d", got, want, i)
+		}
+
+		if got, want := row.Price, prd.Price().String(); got != want {
+			t.Errorf("Price got: %q. want: %q, index: %d", got, want, i)
+		}
+
+		if got, want := row.Description, prd.Description(); got != want {
+			t.Errorf("Description got: %q, want: %q, index: %d", got, want, i)
+		}
+
+		if got, want := row.Quantity, prd.Quantity(); got != want {
+			t.Errorf("Quantity got: %d, want: %d, index: %d", got, want, i)
+		}
+	}
+}
+
 func TestHandler_ProductByID(t *testing.T) {
 	fix := setupFixture(t)
 	defer fix.tearDown()
@@ -277,27 +330,27 @@ func TestHandler_ProductByID(t *testing.T) {
 	}
 
 	if got, want := out.StoreID, prd.StoreID(); got != want {
-		t.Errorf("StoreID got: %q. want: %q", got, want)
+		t.Errorf("StoreID got: %q, want: %q", got, want)
 	}
 
 	if got, want := out.CategoryID, prd.CategoryID(); got != want {
-		t.Errorf("CategoryID got: %q. want: %q", got, want)
+		t.Errorf("CategoryID got: %q, want: %q", got, want)
 	}
 
 	if got, want := out.Name, prd.Name(); got != want {
-		t.Errorf("Name got: %q. want: %q", got, want)
+		t.Errorf("Name got: %q, want: %q", got, want)
 	}
 
 	if got, want := out.Price, prd.Price().String(); got != want {
-		t.Errorf("Price got: %q. want: %q", got, want)
+		t.Errorf("Price got: %q, want: %q", got, want)
 	}
 
 	if got, want := out.Description, prd.Description(); got != want {
-		t.Errorf("Description got: %q. want: %q", got, want)
+		t.Errorf("Description got: %q, want: %q", got, want)
 	}
 
 	if got, want := out.Quantity, prd.Quantity(); got != want {
-		t.Errorf("Quantity got: %d. want: %d", got, want)
+		t.Errorf("Quantity got: %d want: %d", got, want)
 	}
 }
 

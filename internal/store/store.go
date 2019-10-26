@@ -53,6 +53,11 @@ func (s Store) OfferProduct(productID string, category *product.Category, name s
 	return product.New(productID, s.ID(), category.ID(), name, price, description, quantity)
 }
 
+// Equal checks whether equal to s2.
+func (s Store) Equal(s2 *Store) bool {
+	return s.id == s2.id && s.name == s2.name
+}
+
 // NextID returns unique id for store.
 func NextID() string {
 	return xid.New().String()

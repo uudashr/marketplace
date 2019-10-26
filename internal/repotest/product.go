@@ -1,7 +1,6 @@
 package repotest
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/uudashr/marketplace/internal/product"
@@ -36,8 +35,41 @@ func ProductSuite(t *testing.T, setupFixture SetupProductFixtureFunc) {
 			t.Fatal("err:", err)
 		}
 
-		if got, want := retPrd, prd; !reflect.DeepEqual(got, want) {
+		if got, want := retPrd, prd; !got.Equal(want) {
 			t.Errorf("got: %v, want: %v", got, want)
+		}
+	})
+
+	t.Run("EnsureStoredProductOnTheList", func(t *testing.T) {
+		fix := setupFixture(t)
+		defer fix.TearDown()
+
+		str := fixture.Store()
+		prd := fixture.ProductOfStore(str)
+		err := fix.Repository().Store(prd)
+		if err != nil {
+			t.Fatal("err:", err)
+		}
+
+		retPrds, err := fix.Repository().Products()
+		if err != nil {
+			t.Fatal("err:", err)
+		}
+
+		if got := len(retPrds); got == 0 {
+			t.Fatal("Expect not zero")
+		}
+
+		var found bool
+		for _, v := range retPrds {
+			if got, want := v, prd; got.Equal(want) {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			t.Errorf("Expect found %v on list %v", prd, retPrds)
 		}
 	})
 }

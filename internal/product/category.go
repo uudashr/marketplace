@@ -38,6 +38,11 @@ func (c Category) Name() string {
 	return c.name
 }
 
+// Equal checks whether equal to c2.
+func (c Category) Equal(c2 *Category) bool {
+	return c.id == c2.id && c.name == c2.name
+}
+
 // NextCategoryID returns unique id for category.
 func NextCategoryID() string {
 	return xid.New().String()

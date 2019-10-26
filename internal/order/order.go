@@ -136,3 +136,8 @@ func (i Item) Quantity() int {
 func (i Item) SubTotal() decimal.Decimal {
 	return i.price.Mul(decimal.NewFromFloat(float64(i.quantity)))
 }
+
+// ProductWithQuantity constructs order item from given product for specified quantity.
+func ProductWithQuantity(p *product.Product, quantity int) (*Item, error) {
+	return NewItem(p.ID(), p.Price(), quantity)
+}

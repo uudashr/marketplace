@@ -38,3 +38,15 @@ func (r *ProductRepository) ProductByID(id string) (*product.Product, error) {
 
 	return &prd, nil
 }
+
+// Products retrieves products.
+func (r *ProductRepository) Products() ([]*product.Product, error) {
+	prds := make([]*product.Product, len(r.m))
+	i := 0
+	for _, v := range r.m {
+		prd := v
+		prds[i] = &prd
+		i++
+	}
+	return prds, nil
+}

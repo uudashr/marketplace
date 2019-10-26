@@ -86,6 +86,17 @@ func (p Product) Quantity() int {
 	return p.quantity
 }
 
+// Equal checks whether equal to p2.
+func (p Product) Equal(p2 *Product) bool {
+	return p.id == p2.id &&
+		p.storeID == p2.storeID &&
+		p.categoryID == p2.categoryID &&
+		p.name == p2.name &&
+		p.price.Equal(p2.price) &&
+		p.description == p2.description &&
+		p.quantity == p2.quantity
+}
+
 // NextID returns unique id for the product.
 func NextID() string {
 	return xid.New().String()
@@ -96,4 +107,5 @@ func NextID() string {
 type Repository interface {
 	Store(*Product) error
 	ProductByID(id string) (*Product, error)
+	Products() ([]*Product, error)
 }

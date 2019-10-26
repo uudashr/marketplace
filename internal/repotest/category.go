@@ -1,7 +1,6 @@
 package repotest
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/uudashr/marketplace/internal/fixture"
@@ -34,7 +33,7 @@ func CategorySuite(t *testing.T, setupFixture SetupCategoryFixtureFunc) {
 			t.Fatal("err:", err)
 		}
 
-		if got, want := retCat, cat; !reflect.DeepEqual(got, want) {
+		if got, want := retCat, cat; !got.Equal(want) {
 			t.Errorf("got: %v, want: %v", got, want)
 		}
 	})
@@ -82,7 +81,7 @@ func CategorySuite(t *testing.T, setupFixture SetupCategoryFixtureFunc) {
 
 		var found bool
 		for _, v := range retCats {
-			if got, want := v, cat; reflect.DeepEqual(got, want) {
+			if got, want := v, cat; got.Equal(want) {
 				found = true
 				break
 			}

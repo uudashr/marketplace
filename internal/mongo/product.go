@@ -57,6 +57,35 @@ func (r *ProductRepository) ProductByID(id string) (*product.Product, error) {
 	return doc.build()
 }
 
+// Products retrieves products.
+func (r *ProductRepository) Products() ([]*product.Product, error) {
+	cur, err := r.db.Collection("products").Find(context.TODO(), bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		_ = cur.Close(context.TODO())
+	}()
+
+	var out []*product.Product
+	for cur.Next(context.TODO()) {
+		var doc productDoc
+		if err := cur.Decode(&doc); err != nil {
+			return nil, err
+		}
+
+		cat, err := doc.build()
+		if err != nil {
+			return nil, err
+		}
+
+		out = append(out, cat)
+
+	}
+
+	return out, nil
+}
+
 type productDoc struct {
 	ID          string               `bson:"_id"`
 	StoreID     string               `bson:"storeId"`

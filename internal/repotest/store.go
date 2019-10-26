@@ -1,7 +1,6 @@
 package repotest
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/uudashr/marketplace/internal/store"
@@ -35,7 +34,7 @@ func StoreSuite(t *testing.T, setupFixture SetupStoreFixtureFunc) {
 			t.Fatal("err:", err)
 		}
 
-		if got, want := retStr, str; !reflect.DeepEqual(got, want) {
+		if got, want := retStr, str; !got.Equal(want) {
 			t.Errorf("got: %v, want: %v", got, want)
 		}
 	})
@@ -83,7 +82,7 @@ func StoreSuite(t *testing.T, setupFixture SetupStoreFixtureFunc) {
 
 		var found bool
 		for _, v := range retStrs {
-			if got, want := v, str; reflect.DeepEqual(got, want) {
+			if got, want := v, str; got.Equal(want) {
 				found = true
 				break
 			}

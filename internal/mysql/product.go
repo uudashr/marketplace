@@ -69,3 +69,44 @@ func (r *ProductRepository) ProductByID(id string) (*product.Product, error) {
 
 	return product.New(id, storeID, categoryID, name, price, description, quantity)
 }
+
+// Products retrieves products.
+func (r *ProductRepository) Products() ([]*product.Product, error) {
+	rows, err := r.db.Query("SELECT id, store_id, category_id, name, price, description, quantity FROM products")
+	if err != nil {
+		return nil, err
+	}
+
+	var out []*product.Product
+	for rows.Next() {
+		var (
+			id          string
+			storeID     string
+			categoryID  string
+			name        string
+			price       decimal.Decimal
+			description string
+			quantity    int
+		)
+		if err := rows.Scan(
+			&id,
+			&storeID,
+			&categoryID,
+			&name,
+			&price,
+			&description,
+			&quantity,
+		); err != nil {
+			return nil, err
+		}
+
+		prd, err := product.New(id, storeID, categoryID, name, price, description, quantity)
+		if err != nil {
+			return nil, err
+		}
+
+		out = append(out, prd)
+	}
+
+	return out, nil
+}
