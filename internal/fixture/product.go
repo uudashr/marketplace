@@ -37,6 +37,15 @@ func ProductOfStoreWithOptions(str *store.Store, opts ProductOptions) *product.P
 	return prd
 }
 
+// ProductsOfStore fixture.
+func ProductsOfStore(str *store.Store, n int) []*product.Product {
+	out := make([]*product.Product, n)
+	for i := 0; i < n; i++ {
+		out[i] = ProductOfStore(str)
+	}
+	return out
+}
+
 // Products fixture.
 func Products(n int) []*product.Product {
 	out := make([]*product.Product, n)

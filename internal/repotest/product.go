@@ -72,4 +72,31 @@ func ProductSuite(t *testing.T, setupFixture SetupProductFixtureFunc) {
 			t.Errorf("Expect found %v on list %v", prd, retPrds)
 		}
 	})
+
+	t.Run("ProducsOfStore", func(t *testing.T) {
+		fix := setupFixture(t)
+		defer fix.TearDown()
+
+		for i := 0; i < 2; i++ {
+			str := fixture.Store()
+			prds := fixture.ProductsOfStore(str, 3)
+
+			for _, prd := range prds {
+				err := fix.Repository().Store(prd)
+				if err != nil {
+					t.Fatal("err:", err)
+				}
+			}
+
+			retPrds, err := fix.Repository().ProductsOfStore(str.ID())
+			if err != nil {
+				t.Fatal("err:", err)
+			}
+
+			if got, want := len(retPrds), len(prds); got != want {
+				t.Errorf("Len got: %d, want: %d", got, want)
+			}
+		}
+
+	})
 }

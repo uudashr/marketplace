@@ -108,4 +108,5 @@ type Repository interface {
 	Store(*Product) error
 	ProductByID(id string) (*Product, error)
 	Products() ([]*Product, error)
+	ProductsOfStore(storeID string) ([]*Product, error)
 }

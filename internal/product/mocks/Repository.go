@@ -56,6 +56,29 @@ func (_m *Repository) Products() ([]*product.Product, error) {
 	return r0, r1
 }
 
+// ProductsOfStore provides a mock function with given fields: storeID
+func (_m *Repository) ProductsOfStore(storeID string) ([]*product.Product, error) {
+	ret := _m.Called(storeID)
+
+	var r0 []*product.Product
+	if rf, ok := ret.Get(0).(func(string) []*product.Product); ok {
+		r0 = rf(storeID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*product.Product)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(storeID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Store provides a mock function with given fields: _a0
 func (_m *Repository) Store(_a0 *product.Product) error {
 	ret := _m.Called(_a0)

@@ -50,3 +50,17 @@ func (r *ProductRepository) Products() ([]*product.Product, error) {
 	}
 	return prds, nil
 }
+
+// ProductsOfStore retrieves products by storeID.
+func (r *ProductRepository) ProductsOfStore(storeID string) ([]*product.Product, error) {
+	var prds []*product.Product
+	for _, v := range r.m {
+		if v.StoreID() != storeID {
+			continue
+		}
+
+		prd := v
+		prds = append(prds, &prd)
+	}
+	return prds, nil
+}

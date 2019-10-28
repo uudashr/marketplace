@@ -145,7 +145,7 @@ type RegisterNewStoreCommand struct {
 	Name string
 }
 
-// RetrieveStoreByIDCOmmand command for retrieving store by ID.
+// RetrieveStoreByIDCommand command for retrieving store by ID.
 type RetrieveStoreByIDCommand struct {
 	ID string
 }
@@ -163,4 +163,9 @@ type OfferNewProductCommand struct {
 // RetrieveProductByIDCommand command for retrieving product by ID.
 type RetrieveProductByIDCommand struct {
 	ID string
+}
+
+// RetrieveStoreProductsCommand command for retrieving store's products.
+type RetrieveStoreProductsCommand struct {
+	StoreID string
 }

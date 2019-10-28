@@ -54,7 +54,7 @@ func (r *ProductRepository) ProductByID(id string) (*product.Product, error) {
 		return nil, err
 	}
 
-	return doc.build()
+	return doc.build(res)
 }
 
 // Products retrieves products.
@@ -70,11 +70,34 @@ func (r *ProductRepository) Products() ([]*product.Product, error) {
 	var out []*product.Product
 	for cur.Next(context.TODO()) {
 		var doc productDoc
-		if err := cur.Decode(&doc); err != nil {
+		cat, err := doc.build(cur)
+		if err != nil {
 			return nil, err
 		}
 
-		cat, err := doc.build()
+		out = append(out, cat)
+
+	}
+
+	return out, nil
+}
+
+// ProductsOfStore retrieves products of a store.
+func (r *ProductRepository) ProductsOfStore(storeID string) ([]*product.Product, error) {
+	cur, err := r.db.Collection("products").Find(context.TODO(), bson.M{
+		"storeId": storeID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		_ = cur.Close(context.TODO())
+	}()
+
+	var out []*product.Product
+	for cur.Next(context.TODO()) {
+		var doc productDoc
+		cat, err := doc.build(cur)
 		if err != nil {
 			return nil, err
 		}
@@ -96,7 +119,11 @@ type productDoc struct {
 	Quantity    int                  `bson:"quantity"`
 }
 
-func (doc productDoc) build() (*product.Product, error) {
+func (doc productDoc) build(d decoder) (*product.Product, error) {
+	if err := d.Decode(&doc); err != nil {
+		return nil, err
+	}
+
 	price, err := decimal.NewFromString(doc.Price.String())
 	if err != nil {
 		return nil, err
