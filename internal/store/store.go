@@ -1,6 +1,7 @@
 package store
 
 import (
+	"context"
 	"errors"
 
 	"github.com/rs/xid"
@@ -41,7 +42,7 @@ func (s Store) Name() string {
 }
 
 // OfferProduct offers a product.
-func (s Store) OfferProduct(productID string, category *product.Category, name string, price decimal.Decimal, description string, quantity int) (*product.Product, error) {
+func (s Store) OfferProduct(ctx context.Context, productID string, category *product.Category, name string, price decimal.Decimal, description string, quantity int) (*product.Product, error) {
 	if category == nil {
 		return nil, errors.New("nil category")
 	}
@@ -50,7 +51,7 @@ func (s Store) OfferProduct(productID string, category *product.Category, name s
 		return nil, errors.New("zero quantity")
 	}
 
-	return product.New(productID, s.ID(), category.ID(), name, price, description, quantity)
+	return product.CreateNewProduct(ctx, productID, s.ID(), category.ID(), name, price, description, quantity)
 }
 
 // Equal checks whether equal to s2.

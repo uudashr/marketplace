@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"errors"
 
 	"github.com/shopspring/decimal"
@@ -107,7 +108,7 @@ func (svc *Service) OfferNewProduct(cmd OfferNewProductCommand) (*product.Produc
 		return nil, errors.New("category not found")
 	}
 
-	prd, err := str.OfferProduct(product.NextID(), cat, cmd.Name, cmd.Price, cmd.Description, cmd.Quantity)
+	prd, err := str.OfferProduct(context.TODO(), product.NextID(), cat, cmd.Name, cmd.Price, cmd.Description, cmd.Quantity)
 	if err != nil {
 		return nil, err
 	}

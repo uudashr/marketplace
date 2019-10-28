@@ -1,7 +1,10 @@
 package product_test
 
 import (
+	"context"
 	"testing"
+
+	"github.com/uudashr/marketplace/internal/eventd"
 
 	"github.com/uudashr/marketplace/internal/product"
 	"github.com/uudashr/marketplace/internal/store"
@@ -122,4 +125,25 @@ func TestProduct(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestCreateNewProduct(t *testing.T) {
+	id := product.NextID()
+	storeID := store.NextID()
+	categoryID := product.NextCategoryID()
+	name := "Mineral Water"
+	price := decimal.NewFromFloat(2500.1)
+	description := "Some value"
+	quantity := 100
+
+	var bus eventd.Bus
+	ctx := eventd.ContextWithPublisher(context.TODO(), &bus)
+
+	prd, err := product.CreateNewProduct(ctx, id, storeID, categoryID, name, price, description, quantity)
+	if err != nil {
+		t.Fatal("err:", err)
+	}
+
+	_ = prd
+
 }

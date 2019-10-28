@@ -1,7 +1,11 @@
 package product
 
 import (
+	"context"
 	"errors"
+
+	"github.com/uudashr/marketplace/event"
+	"github.com/uudashr/marketplace/internal/eventd"
 
 	"github.com/rs/xid"
 	"github.com/shopspring/decimal"
@@ -49,6 +53,26 @@ func New(id, storeID, categoryID, name string, price decimal.Decimal, descriptio
 		description: description,
 		quantity:    quantity,
 	}, nil
+}
+
+func CreateNewProduct(ctx context.Context, id, storeID, categoryID, name string, price decimal.Decimal, description string, quantity int) (retPrd *Product, retErr error) {
+	defer func() {
+		if retErr != nil {
+			return
+		}
+
+		eventd.Publish(ctx, event.NewProductCreated{
+			ID:          id,
+			StoreID:     storeID,
+			CategoryID:  categoryID,
+			Name:        name,
+			Price:       price,
+			Description: description,
+			Quantity:    quantity,
+		})
+	}()
+
+	return New(id, storeID, categoryID, name, price, description, quantity)
 }
 
 // ID of the product.

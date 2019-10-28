@@ -1,7 +1,12 @@
 package store_test
 
 import (
+	"context"
 	"testing"
+
+	"github.com/uudashr/marketplace/event"
+
+	"github.com/uudashr/marketplace/internal/eventd"
 
 	"github.com/shopspring/decimal"
 
@@ -117,10 +122,21 @@ func TestOfferProduct(t *testing.T) {
 
 	for name, c := range cases {
 		t.Run(name, func(t *testing.T) {
-			p, err := s.OfferProduct(c.id, c.category, c.name, c.price, c.description, c.quantity)
+			bus := new(eventd.Bus)
+			var capturedEvent eventd.Event
+			bus.SubscribeFunc(func(e eventd.Event) {
+				capturedEvent = e
+			})
+
+			ctx := eventd.ContextWithPublisher(context.TODO(), bus)
+			p, err := s.OfferProduct(ctx, c.id, c.category, c.name, c.price, c.description, c.quantity)
 			if c.expectErr {
 				if err == nil {
 					t.Fatal("Expect err")
+				}
+
+				if capturedEvent != nil {
+					t.Fatal("Expect not event captured")
 				}
 				return
 			}
@@ -129,6 +145,7 @@ func TestOfferProduct(t *testing.T) {
 				t.Fatal("err:", err)
 			}
 
+			// Assert created product
 			if got, want := p.ID(), c.id; got != want {
 				t.Errorf("ID got: %q, want: %q", got, want)
 			}
@@ -155,6 +172,44 @@ func TestOfferProduct(t *testing.T) {
 
 			if got, want := p.Quantity(), c.quantity; got != want {
 				t.Errorf("Quantity got: %d, want: %d", got, want)
+			}
+
+			// Assert captured event
+			if capturedEvent == nil {
+				t.Fatal("Expect event captured")
+			}
+
+			e, ok := capturedEvent.(event.NewProductCreated)
+			if !ok {
+				t.Fatal("Unexpected event type")
+			}
+
+			if got, want := e.ID, c.id; got != want {
+				t.Errorf("Event ID got: %q, want: %q", got, want)
+			}
+
+			if got, want := e.StoreID, s.ID(); got != want {
+				t.Errorf("Event StoreID got: %q, want: %q", got, want)
+			}
+
+			if got, want := e.CategoryID, c.category.ID(); got != want {
+				t.Errorf("Event CategoryID got: %q, want: %q", got, want)
+			}
+
+			if got, want := e.Name, c.name; got != want {
+				t.Errorf("Event Name got: %q, want: %q", got, want)
+			}
+
+			if got, want := e.Price, c.price; got != want {
+				t.Errorf("Event Price got: %q, want: %q", got, want)
+			}
+
+			if got, want := e.Description, c.description; got != want {
+				t.Errorf("Event Description got: %q, want: %q", got, want)
+			}
+
+			if got, want := e.Quantity, c.quantity; got != want {
+				t.Errorf("Event Quantity got: %d, want: %d", got, want)
 			}
 		})
 	}
