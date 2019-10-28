@@ -181,6 +181,44 @@ func TestOfferNewProduct(t *testing.T) {
 	}
 }
 
+func TestRetrieveProducts(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	prds := modelfixture.Products(10)
+	fix.productRepo.On("Products").Return(prds, nil)
+
+	retPrds, err := fix.service.RetrieveProducts()
+	if err != nil {
+		t.Fatal("err:", err)
+	}
+
+	if got, want := retPrds, prds; !reflect.DeepEqual(got, want) {
+		t.Errorf("Products got: %v, want: %v", got, want)
+	}
+}
+
+func TestRetrieveProductsOfStore(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	str := modelfixture.Store()
+	prds := modelfixture.ProductsOfStore(str, 19)
+
+	fix.productRepo.On("ProductsOfStore", str.ID()).Return(prds, nil)
+
+	retPrds, err := fix.service.RetrieveProductsOfStore(app.RetrieveProductsOfStoreCommand{
+		StoreID: str.ID(),
+	})
+	if err != nil {
+		t.Fatal("err:", err)
+	}
+
+	if got, want := retPrds, prds; !reflect.DeepEqual(got, want) {
+		t.Errorf("Products got: %v, want: %v", got, want)
+	}
+}
+
 func TestRetrieveProductByID(t *testing.T) {
 	fix := setupFixture(t)
 	defer fix.tearDown()

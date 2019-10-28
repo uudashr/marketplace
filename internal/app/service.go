@@ -130,6 +130,11 @@ func (svc *Service) RetrieveProductByID(cmd RetrieveProductByIDCommand) (*produc
 	return svc.productRepo.ProductByID(cmd.ID)
 }
 
+// RetrieveProductsOfStore retrieves products of a store.
+func (svc *Service) RetrieveProductsOfStore(cmd RetrieveProductsOfStoreCommand) ([]*product.Product, error) {
+	return svc.productRepo.ProductsOfStore(cmd.StoreID)
+}
+
 // RegisterNewCategoryCommand command for registering new category.
 type RegisterNewCategoryCommand struct {
 	Name string
@@ -165,7 +170,7 @@ type RetrieveProductByIDCommand struct {
 	ID string
 }
 
-// RetrieveStoreProductsCommand command for retrieving store's products.
-type RetrieveStoreProductsCommand struct {
+// RetrieveProductsOfStoreCommand command for retrieve products of a store.
+type RetrieveProductsOfStoreCommand struct {
 	StoreID string
 }
