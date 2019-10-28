@@ -20,7 +20,7 @@ func main() {
 	flagAction := flag.String("action", "", "The action ('up' or 'down')")
 	flagDBAddress := flag.String("db-address", "localhost:27017", "Database address")
 	flagDBName := flag.String("db-name", "marketplace_test", "Database name")
-	flagHelp := flag.Bool("helo", false, "Show help")
+	flagHelp := flag.Bool("help", false, "Show help")
 
 	flag.Parse()
 	if *flagHelp {
