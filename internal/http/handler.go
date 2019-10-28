@@ -28,6 +28,7 @@ type AppService interface {
 	RetrieveStoreByID(app.RetrieveStoreByIDCommand) (*store.Store, error)
 
 	OfferNewProduct(app.OfferNewProductCommand) (*product.Product, error)
+	RetrieveProductsOfStore(app.RetrieveProductsOfStoreCommand) ([]*product.Product, error)
 	RetrieveProducts() ([]*product.Product, error)
 	RetrieveProductByID(app.RetrieveProductByIDCommand) (*product.Product, error)
 }
@@ -165,6 +166,31 @@ func (d *delegate) offerNewProduct(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
+func (d *delegate) retrieveProductsOfStore(c echo.Context) error {
+	paramID := c.Param("id")
+	prds, err := d.appService.RetrieveProductsOfStore(app.RetrieveProductsOfStoreCommand{
+		StoreID: paramID,
+	})
+	if err != nil {
+		return err
+	}
+
+	out := make([]productPayload, len(prds))
+	for i, v := range prds {
+		out[i] = productPayload{
+			ID:          v.ID(),
+			StoreID:     v.StoreID(),
+			CategoryID:  v.CategoryID(),
+			Name:        v.Name(),
+			Price:       v.Price(),
+			Description: v.Description(),
+			Quantity:    v.Quantity(),
+		}
+	}
+
+	return c.JSON(http.StatusOK, out)
+}
+
 func (d *delegate) retrieveProducts(c echo.Context) error {
 	prds, err := d.appService.RetrieveProducts()
 	if err != nil {
@@ -234,6 +260,7 @@ func NewHandler(appService AppService) (http.Handler, error) {
 	e.GET("/stores", d.retrieveStores)
 	e.GET("/stores/:id", d.retrieveStoreByID)
 	e.POST("/stores/:id/products", d.offerNewProduct)
+	e.GET("/stores/:id/products", d.retrieveProductsOfStore)
 
 	e.GET("/products", d.retrieveProducts)
 	e.GET("/products/:id", d.retrieveProductByID)

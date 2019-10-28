@@ -6,6 +6,8 @@ import (
 	nethttp "net/http"
 	"testing"
 
+	"github.com/uudashr/marketplace/internal/product"
+
 	modelfixture "github.com/uudashr/marketplace/internal/fixture"
 
 	"github.com/uudashr/marketplace/internal/app"
@@ -252,6 +254,29 @@ func TestHandler_OfferNewProduct(t *testing.T) {
 	}
 }
 
+func TestHandler_ProductsOfStore(t *testing.T) {
+	fix := setupFixture(t)
+	defer fix.tearDown()
+
+	str := modelfixture.Store()
+	prds := modelfixture.ProductsOfStore(str, 3)
+	fix.appService.On("RetrieveProductsOfStore", app.RetrieveProductsOfStoreCommand{
+		StoreID: str.ID(),
+	}).Return(prds, nil)
+
+	res := httpGet(fix.handler, fmt.Sprintf("/stores/%s/products", str.ID()))
+	if got, want := res.StatusCode, nethttp.StatusOK; got != want {
+		t.Fatalf("StatusCode got: %d, want: %d", got, want)
+	}
+
+	var out []productPayload
+	if err := json.NewDecoder(res.Body).Decode(&out); err != nil {
+		t.Fatal("err:", err)
+	}
+
+	assertEqualToProductsPayload(t, out, prds)
+}
+
 func TestHandler_Products(t *testing.T) {
 	fix := setupFixture(t)
 	defer fix.tearDown()
@@ -269,40 +294,7 @@ func TestHandler_Products(t *testing.T) {
 		t.Fatal("err:", err)
 	}
 
-	if got, want := len(out), len(prds); got != want {
-		t.Fatalf("Length got: %d, want: %d", got, want)
-	}
-
-	for i, prd := range prds {
-		row := out[i]
-		if got, want := row.ID, prd.ID(); got != want {
-			t.Errorf("ID got: %q. want: %q, index: %d", got, want, i)
-		}
-
-		if got, want := row.StoreID, prd.StoreID(); got != want {
-			t.Errorf("StoreID got: %q, want: %q, index: %d", got, want, i)
-		}
-
-		if got, want := row.CategoryID, prd.CategoryID(); got != want {
-			t.Errorf("CategoryID got: %q. want: %q, index: %d", got, want, i)
-		}
-
-		if got, want := row.Name, prd.Name(); got != want {
-			t.Errorf("Name got: %q, want: %q, index: %d", got, want, i)
-		}
-
-		if got, want := row.Price, prd.Price().String(); got != want {
-			t.Errorf("Price got: %q. want: %q, index: %d", got, want, i)
-		}
-
-		if got, want := row.Description, prd.Description(); got != want {
-			t.Errorf("Description got: %q, want: %q, index: %d", got, want, i)
-		}
-
-		if got, want := row.Quantity, prd.Quantity(); got != want {
-			t.Errorf("Quantity got: %d, want: %d, index: %d", got, want, i)
-		}
-	}
+	assertEqualToProductsPayload(t, out, prds)
 }
 
 func TestHandler_ProductByID(t *testing.T) {
@@ -397,4 +389,42 @@ func setupFixture(t *testing.T) *testFixture {
 
 func (fix *testFixture) tearDown() {
 	mock.AssertExpectationsForObjects(fix.t, fix.appService)
+}
+
+func assertEqualToProductsPayload(t *testing.T, out []productPayload, prds []*product.Product) {
+	t.Helper()
+	if got, want := len(out), len(prds); got != want {
+		t.Fatalf("Length got: %d, want: %d", got, want)
+	}
+
+	for i, prd := range prds {
+		row := out[i]
+		if got, want := row.ID, prd.ID(); got != want {
+			t.Errorf("ID got: %q. want: %q, index: %d", got, want, i)
+		}
+
+		if got, want := row.StoreID, prd.StoreID(); got != want {
+			t.Errorf("StoreID got: %q, want: %q, index: %d", got, want, i)
+		}
+
+		if got, want := row.CategoryID, prd.CategoryID(); got != want {
+			t.Errorf("CategoryID got: %q. want: %q, index: %d", got, want, i)
+		}
+
+		if got, want := row.Name, prd.Name(); got != want {
+			t.Errorf("Name got: %q, want: %q, index: %d", got, want, i)
+		}
+
+		if got, want := row.Price, prd.Price().String(); got != want {
+			t.Errorf("Price got: %q. want: %q, index: %d", got, want, i)
+		}
+
+		if got, want := row.Description, prd.Description(); got != want {
+			t.Errorf("Description got: %q, want: %q, index: %d", got, want, i)
+		}
+
+		if got, want := row.Quantity, prd.Quantity(); got != want {
+			t.Errorf("Quantity got: %d, want: %d, index: %d", got, want, i)
+		}
+	}
 }
