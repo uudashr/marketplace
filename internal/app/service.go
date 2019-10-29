@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/uudashr/marketplace/internal/eventd"
+
 	"github.com/shopspring/decimal"
 
 	"github.com/uudashr/marketplace/internal/store"
@@ -16,6 +18,7 @@ type Service struct {
 	categoryRepo product.CategoryRepository
 	storeRepo    store.Repository
 	productRepo  product.Repository
+	EventHandler eventd.EventHandler
 }
 
 // NewService constructs new service.
@@ -89,7 +92,14 @@ func (svc *Service) RetrieveStoreByID(cmd RetrieveStoreByIDCommand) (*store.Stor
 }
 
 // OfferNewProduct offers new product.
-func (svc *Service) OfferNewProduct(cmd OfferNewProductCommand) (*product.Product, error) {
+func (svc *Service) OfferNewProduct(cmd OfferNewProductCommand) (retPrd *product.Product, retErr error) {
+	lc, ctx := NewLifecycle(context.Background())
+	defer lc.End(retErr)
+
+	if svc.EventHandler != nil {
+		lc.SubscribeEvent(svc.EventHandler)
+	}
+
 	str, err := svc.storeRepo.StoreByID(cmd.StoreID)
 	if err != nil {
 		return nil, err
@@ -108,7 +118,7 @@ func (svc *Service) OfferNewProduct(cmd OfferNewProductCommand) (*product.Produc
 		return nil, errors.New("category not found")
 	}
 
-	prd, err := str.OfferProduct(context.TODO(), product.NextID(), cat, cmd.Name, cmd.Price, cmd.Description, cmd.Quantity)
+	prd, err := str.OfferProduct(ctx, product.NextID(), cat, cmd.Name, cmd.Price, cmd.Description, cmd.Quantity)
 	if err != nil {
 		return nil, err
 	}

@@ -71,7 +71,14 @@ func main() {
 			panic(err)
 		}
 
+		eventLogger := log.With(logger, "component", "EventHandler")
+		eventHandler, err := app.NewLogEventHandler(eventLogger)
+		if err != nil {
+			panic(err)
+		}
+
 		handler, err := http.NewHandler(appService)
+		appService.EventHandler = eventHandler
 		if err != nil {
 			panic(err)
 		}
