@@ -2,15 +2,21 @@ package eventd
 
 import (
 	"context"
+	"reflect"
+	"time"
 )
 
 // Publisher publishes event.
 type Publisher interface {
-	Publish(Event)
+	Publish(eventName string, eventBody interface{})
 }
 
 // Event represent the events.
-type Event interface{}
+type Event struct {
+	Name        string
+	Body        interface{}
+	OccuredTime time.Time
+}
 
 // EventHandler handles event.
 type EventHandler interface {
@@ -31,7 +37,12 @@ type Bus struct {
 }
 
 // Publish publishes the event.
-func (b *Bus) Publish(e Event) {
+func (b *Bus) Publish(eventName string, eventBody interface{}) {
+	e := Event{
+		Name:        eventName,
+		Body:        eventBody,
+		OccuredTime: time.Now(),
+	}
 	for _, h := range b.handlers {
 		h.HandleEvent(e)
 	}
@@ -76,12 +87,19 @@ func PublisherFromContext(ctx context.Context) Publisher {
 	return p
 }
 
-// Publish publish events using publiher on the ctx.
-func Publish(ctx context.Context, e Event) {
+// Publish publishs event using publiher on the ctx.
+func Publish(ctx context.Context, eventName string, eventBody interface{}) {
 	pub := PublisherFromContext(ctx)
 	if pub == nil {
 		return
 	}
 
-	pub.Publish(e)
+	pub.Publish(eventName, eventBody)
+}
+
+// PublishNamed publishes event using publisher on the ctx.
+// Name of the event will be derinfed from the type name of eventBody.
+func PublishNamed(ctx context.Context, eventBody interface{}) {
+	eventName := reflect.TypeOf(eventBody).Name()
+	Publish(ctx, eventName, eventBody)
 }

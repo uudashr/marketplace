@@ -33,12 +33,12 @@ func TestLifecycle_Publish(t *testing.T) {
 			lc, ctx := app.NewLifecycle(context.TODO())
 			var handled bool
 			lc.SubscribeEventFunc(func(e eventd.Event) {
-				if e == c.event {
+				if e.Body == c.event {
 					handled = true
 				}
 			})
 
-			eventd.Publish(ctx, c.event)
+			eventd.PublishNamed(ctx, c.event)
 
 			lc.End(c.err)
 

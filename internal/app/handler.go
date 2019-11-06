@@ -3,7 +3,7 @@ package app
 import (
 	"encoding/json"
 	"errors"
-	"reflect"
+	"time"
 
 	"github.com/go-kit/kit/log"
 	"github.com/uudashr/marketplace/internal/eventd"
@@ -27,10 +27,10 @@ func NewLogEventHandler(logger log.Logger) (*LogEventHandler, error) {
 
 // HandleEvent implements the eventd.EventHandler interface.
 func (h *LogEventHandler) HandleEvent(e eventd.Event) {
-	name := reflect.TypeOf(e).Name()
-	b, err := json.Marshal(e)
+	b, err := json.Marshal(e.Body)
 	if err != nil {
 		panic(err)
 	}
-	h.logger.Log("event", name, "body", string(b))
+
+	h.logger.Log("event", e.Name, "body", string(b), "occuredTime", e.OccuredTime.Format(time.RFC3339))
 }

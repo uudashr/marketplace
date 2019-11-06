@@ -135,7 +135,7 @@ func TestOfferProduct(t *testing.T) {
 					t.Fatal("Expect err")
 				}
 
-				if capturedEvent != nil {
+				if capturedEvent.Body != nil {
 					t.Fatal("Expect not event captured")
 				}
 				return
@@ -175,11 +175,11 @@ func TestOfferProduct(t *testing.T) {
 			}
 
 			// Assert captured event
-			if capturedEvent == nil {
+			if capturedEvent.Body == nil {
 				t.Fatal("Expect event captured")
 			}
 
-			e, ok := capturedEvent.(event.NewProductCreated)
+			e, ok := capturedEvent.Body.(event.NewProductCreated)
 			if !ok {
 				t.Fatal("Unexpected event type")
 			}

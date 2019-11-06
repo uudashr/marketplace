@@ -55,13 +55,14 @@ func New(id, storeID, categoryID, name string, price decimal.Decimal, descriptio
 	}, nil
 }
 
+// CreateNewProduct creates new product.
 func CreateNewProduct(ctx context.Context, id, storeID, categoryID, name string, price decimal.Decimal, description string, quantity int) (retPrd *Product, retErr error) {
 	defer func() {
 		if retErr != nil {
 			return
 		}
 
-		eventd.Publish(ctx, event.NewProductCreated{
+		eventd.PublishNamed(ctx, event.NewProductCreated{
 			ID:          id,
 			StoreID:     storeID,
 			CategoryID:  categoryID,

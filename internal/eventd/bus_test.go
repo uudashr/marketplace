@@ -15,11 +15,11 @@ func TestBus(t *testing.T) {
 		captured = e
 	})
 
-	msg := "Hello"
-	b.Publish(msg)
+	eventName, eventBody := "Hi", "Hello, World!"
+	b.Publish(eventName, eventBody)
 
-	if got, want := captured, msg; got != want {
-		t.Errorf("Captured %q, want: %q", got, want)
+	if got, want := captured.Name, eventName; got != want {
+		t.Errorf("Captured event name %q, want: %q", got, want)
 	}
 }
 
@@ -45,10 +45,10 @@ func TestPublish(t *testing.T) {
 	msg := Ping{
 		Message: "Hello",
 	}
-	eventd.Publish(ctx, msg)
+	eventd.PublishNamed(ctx, msg)
 
-	if got, want := captured, msg; got != want {
-		t.Errorf("Captured %q, want: %q", got, want)
+	if got, want := captured.Name, "Ping"; got != want {
+		t.Errorf("Captured event name %q, want: %q", got, want)
 	}
 }
 
