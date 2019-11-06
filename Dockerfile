@@ -1,5 +1,5 @@
 # == Builder ==
-FROM golang:1.13.3-alpine3.10 as builder
+FROM golang:1.13.4-alpine3.10 as builder
 
 RUN apk add --no-cache bash=5.0.0-r0 git=2.22.0-r0
 
