@@ -19,7 +19,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o /app/marketplace-up cmd/marketplace-up/*.go
 
 # == Runner ==
-FROM alpine:3.10.2
+FROM alpine:3.10.3
 
 # Copy binary from builder
 COPY --from=builder /app/marketplace-up /app/marketplace-up
