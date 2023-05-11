@@ -7,9 +7,8 @@ require (
 	github.com/containerd/containerd v1.3.0 // indirect
 	github.com/corpix/uarand v0.1.1 // indirect
 	github.com/dhui/dktest v0.3.1 // indirect
-	github.com/docker/distribution v2.7.1+incompatible // indirect
+	github.com/docker/distribution v2.8.2+incompatible // indirect
 	github.com/docker/go-units v0.4.0 // indirect
-	github.com/elastic/go-elasticsearch/v7 v7.4.1
 	github.com/go-kit/kit v0.9.0
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
